@@ -1,9 +1,17 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, redirect
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import authenticate, login
 
-# Create your views here.
 def register(request):
-    return render(request, 'users/register.html')
-
-
-def login(request):
-    return render(request, 'users/login.html')
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=password)
+            login(request, user)
+            return redirect('invoice:home')  # Redirect to home page or any other page
+    else:
+        form = UserCreationForm()
+    return render(request, 'users/register.html', {'form': form})
