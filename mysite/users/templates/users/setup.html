@@ -1,0 +1,41 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+
+<div class="bg-gray-700 shadow-lg p-6 rounded-lg md:w-1/2 mx-auto">
+  <h2 class="text-white text-2xl font-bold mb-4">Your details</h2>
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-4">
+      <label for="name" class="block text-white font-bold mb-2">Name</label>
+      <input type="text" id="name" name="name" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+    </div>
+    <div class="mb-4">
+      <label for="address" class="block text-white font-bold mb-2">Address</label>
+      <input type="address" id="address" name="address" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+    </div>
+    <div class="mb-6">
+      <label for="email" class="block text-white font-bold mb-2">email</label>
+      <input type="email" id="email" name="email" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+    </div>
+    <div class="mb-6">
+        <label for="contact" class="block text-white font-bold mb-2">contact</label>
+        <input type="text" id="contact" name="contact" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+      </div>
+    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">SetUp</button>
+  </form>
+</div>
+
+{% if form.errors %}
+      <div class="bg-red-200 text-red-800 shadow-lg p-6 rounded-lg md:w-1/2 mx-auto">
+        <strong>Error:</strong> Please correct the following errors.
+        <ul>
+          {% for field, error_list in form.errors.items %}
+            {% for error in error_list %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+{% endblock %}

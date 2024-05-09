@@ -1,24 +1,26 @@
 from django.db import models
 from django.core.validators import EmailValidator, MinLengthValidator
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 # Create your models here.
 # id automatically created as PK, e.g. Freelance_instance.id
 class Freelancer(models.Model):
-    name = models.CharField(max_length=10)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, default=None)
+    name = models.CharField(max_length=20)
     address = models.CharField(max_length=300)
     email = models.CharField(max_length=100, validators=[EmailValidator()])
-    contact = models.IntegerField(validators=[MinLengthValidator(6)])
+    contact = models.CharField(max_length=20) 
 
     def __str__(self):
         return self.name
 
 class Client(models.Model):
     freelancer = models.ForeignKey(Freelancer, on_delete=models.CASCADE),
-    name = models.CharField(max_length=10)
+    name = models.CharField(max_length=20)
     address = models.CharField(max_length=300)
     email = models.CharField(max_length=100, validators=[EmailValidator()])
-    contact = models.IntegerField(validators=[MinLengthValidator(6)])
+    contact = models.CharField(max_length=20) 
 
     def __str__(self):
         return self.name

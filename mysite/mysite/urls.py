@@ -23,5 +23,5 @@ from invoice import views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('users/', include('users.urls')),
-    path('', include('invoice.urls')),
+    path('invoices/', include('invoice.urls')),
 ]
