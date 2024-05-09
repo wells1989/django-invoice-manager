@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Manager</title>
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="text-black">
+
+    <!-- Header -->
+    <header class="bg-yellow-600 py-4 mt-8">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-lg md:text-3xl font-bold">Invoice Manager Homepage</h1>
+            <div>
+                <a href="{% url 'invoice:home' %}" class="btn btn-primary w-1/6 bg-blue-500 hover:bg-blue-600 text-center text-white font-bold py-2 px-4 rounded-lg">Home</a>
+                <form method="post" action="{% url 'users:logout' %}" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary bg-green-500 hover:bg-blue-600 text-center text-white font-bold py-2 px-4 rounded-lg ml-4">Logout</button>
+                </form>
+            </div>
+        </div> 
+    </header>
+
+    <!-- Main Content Area -->
+    <div class="container mx-auto mt-8">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-orange-600 py-4 mt-8">
+        <div class="container mx-auto text-center">
+            <p>&copy; {{ year }} Invoice Manager. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -1,4 +1,4 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Freelancer
 
@@ -8,9 +8,14 @@ def test(request):
 
 @login_required
 def home(request):
-
-    logged_in_freelancer = Freelancer.objects.get(user=request.user)
-    
-    return render(request, 'invoice/home.html', {'logged_in_freelancer':logged_in_freelancer})
+    if request.user.is_authenticated:
+        try:
+            logged_in_freelancer = Freelancer.objects.get(user=request.user)
+        
+            return render(request, 'invoice/home.html', {'logged_in_freelancer':logged_in_freelancer})
+        except:
+            return redirect('users:login')   
+    else:
+        return redirect('users:login')
 
 
