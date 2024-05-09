@@ -12,29 +12,120 @@
     <!-- Header -->
     <header class="bg-yellow-600 py-4 mt-8">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-lg md:text-3xl font-bold">Invoice Manager Homepage</h1>
+            <h1 class="text-lg md:text-3xl font-bold p-3">Invoice Manager Homepage</h1>
             <div>
-                <a href="{% url 'invoice:home' %}" class="btn btn-primary w-1/6 bg-blue-500 hover:bg-blue-600 text-center text-white font-bold py-2 px-4 rounded-lg">Home</a>
+                <a href="{% url 'invoice:home' %}" class="btn btn-primary w-1/6 bg-blue-500 hover:bg-blue-600 text-center text-white font-bold py-2 px-4 m-3 rounded-lg">Home</a>
                 <form method="post" action="{% url 'users:logout' %}" class="inline">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-primary bg-green-500 hover:bg-blue-600 text-center text-white font-bold py-2 px-4 rounded-lg ml-4">Logout</button>
+                    <button type="submit" class="btn btn-primary bg-green-500 hover:bg-blue-600 text-center text-white font-bold py-2 px-4 rounded-lg m-3">Logout</button>
                 </form>
             </div>
         </div> 
     </header>
+    
 
     <!-- Main Content Area -->
     <div class="container mx-auto mt-8">
+        <div class="bg-white shadow">
+            <div class="container mx-auto">
+                <h1 class="text-lg md:text-xl font-semibold p-3">Welcome {{ request.user.username }}</h1>
+                <div class="flex justify-center items-center gap-5 py-4 px-2">
+                    <h1 class="text-xl font-semibold">Services</h1>
+
+                    <button class="text-gray-500 hover:text-gray-600" id="open-sidebar">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                </div>
+
+                <div id="services" class="flex justify-center align-center gap-3 flex-wrap w-full">
+                    <div class="min-w-min bg-gray-700 shadow-md rounded-lg overflow-hidden text-white">
+                        <div class="p-4">
+                          <h2 class="text-lg font-semibold mb-2">My details</h2>
+                          <p class="mb-2">Manage your account</p>
+                        </div>
+                        <div class="p-4 border-t border-gray-200">
+                          <button class="settings-buttons px-4 py-2 bg-blue-500 rounded hover:bg-blue-600" data-url="{% url 'invoice:settings' %}">Here</button>
+                        </div>
+                    </div>
+                    <div class="min-w-min bg-gray-700 text-white shadow-md rounded-lg overflow-hidden">
+                        <div class="p-4">
+                          <h2 class="text-lg font-semibold mb-2">My Invoices</h2>
+                          <p class=" mb-2">Manage your Invoices</p>
+                        </div>
+                        <div class="p-4 border-t border-gray-200">
+                          <button class="settings-buttons px-4 py-2 bg-blue-500 rounded hover:bg-blue-600" data-url="{% url 'invoice:my_invoices' %}">Here</button>
+                        </div>
+                    </div>
+                    <div class="min-w-min bg-gray-700 text-white shadow-md rounded-lg overflow-hidden">
+                        <div class="p-4">
+                          <h2 class="text-lg font-semibold mb-2">New Invoice</h2>
+                          <p class=" mb-2">Create an invoice</p>
+                        </div>
+                        <div class="p-4 border-t border-gray-200">
+                          <button class="settings-buttons px-4 py-2 bg-blue-500 rounded hover:bg-blue-600" data-url="{% url 'invoice:new_invoice' %}">Here</button>
+                        </div>
+                    </div>
+                    <div class="min-w-min bg-gray-700 text-white shadow-md rounded-lg overflow-hidden">
+                        <div class="p-4">
+                          <h2 class="text-lg font-semibold mb-2">My History</h2>
+                          <p class="mb-2">View history of invoice status</p>
+                        </div>
+                        <div class="p-4 border-t border-gray-200">
+                          <button class="settings-buttons px-4 py-2 bg-blue-500 rounded hover:bg-blue-600" data-url="{% url 'invoice:history' %}">Here</button>
+                        </div>
+                    </div>
+                    <div class="min-w-min bg-gray-700 text-white shadow-md rounded-lg overflow-hidden">
+                        <div class="p-4">
+                          <h2 class="text-lg font-semibold mb-2">Statistics</h2>
+                          <p class="mb-2">View your statistics</p>
+                        </div>
+                        <div class="p-4 border-t border-gray-200">
+                          <button class="settings-buttons px-4 py-2 bg-blue-500 rounded hover:bg-blue-600" data-url="{% url 'invoice:statistics' %}">Here</button>
+                        </div>
+                    </div>
+                </div>
+                    
+                      
+                </div>
+            </div>
+        </div>
         {% block content %}
         {% endblock %}
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-orange-600 py-4 mt-8">
-        <div class="container mx-auto text-center">
-            <p>&copy; {{ year }} Invoice Manager. All rights reserved.</p>
-        </div>
-    </footer>
+<script>
+    // toggling services menu section
+    document.addEventListener("DOMContentLoaded", function() {
+        const openSidebarBtn = document.getElementById("open-sidebar");
+        const sidebar = document.getElementById("services");
+    
+        openSidebarBtn.addEventListener("click", function() {
+        sidebar.classList.toggle("hidden");
+        });
+    });
+
+    // event listeners for buttons, and redirect to django URLS
+    document.addEventListener("DOMContentLoaded", function() {
+        const buttons = document.querySelectorAll(".settings-buttons");
+
+        buttons.forEach(function(button) {
+        button.addEventListener("click", function() {
+            const url = button.dataset.url;
+            window.location.href = url;
+        });
+        });
+    });
+</script>
+
+
+    </script>
 
 </body>
+<footer class="bg-gray-400 fixed bottom-0 w-full mx-auto">
+    <div class="container mx-auto text-center">
+        <p>&copy; {{ year }} Invoice Manager. All rights reserved.</p>
+    </div>
+</footer>
 </html>
