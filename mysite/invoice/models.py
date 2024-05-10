@@ -42,7 +42,7 @@ class Invoice(models.Model):
 
     date = models.DateTimeField(default=timezone.now)
     month_ending = models.DateTimeField(default=None)
-    services = models.JSONField(null=True)
+    services = models.TextField(null=True)
     total_hours = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     total_charge = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     currency = models.CharField(max_length=3, default="EUR")

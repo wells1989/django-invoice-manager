@@ -2,4 +2,32 @@
 
 {% block content %}
 <h1>invoices page</h1>
+
+{% for invoice in invoices %}
+<h2>{{ invoice.id }}</h2>
+
+<h2>Freelancer</h2>
+<h2>{{ invoice.freelancer.id }}</h2>
+<p>{{ invoice.freelancer_name }}</p>
+<p>{{ invoice.freelancer_address }}</p>
+<p>{{ invoice.freelancer_email }}</p>
+<p>{{ invoice.freelancer_contact }}</p>
+
+<h2>Client</h2>
+<h2>{{ invoice.client.id }}</h2>
+<p>{{ invoice.client_name }}</p>
+<p>{{ invoice.client_address }}</p>
+<p>{{ invoice.client_email }}</p>
+<p>{{ invoice.client_contact }}</p>
+
+<h2>details</h2>
+<p>{{ invoice.date }}</p>
+<p>{{ invoice.month_ending }}</p>
+<p>{{ invoice.services }}</p>
+<p>{{ invoice.total_hours }}</p>
+<p>{{ invoice.total_charge }}</p>
+<p>{{ invoice.been_paid }}</p>
+<p>{{ invoice.status }}</p>
+
+{% endfor %}
 {% endblock %}
