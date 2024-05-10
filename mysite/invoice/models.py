@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 # id automatically created as PK, e.g. Freelance_instance.id
 class Freelancer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, default=None)
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=50)
     address = models.CharField(max_length=300)
     email = models.CharField(max_length=100, validators=[EmailValidator()])
     contact = models.CharField(max_length=20) 
@@ -17,7 +17,7 @@ class Freelancer(models.Model):
 
 class Client(models.Model):
     freelancer = models.ForeignKey(Freelancer, on_delete=models.CASCADE),
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=50)
     address = models.CharField(max_length=300)
     email = models.CharField(max_length=100, validators=[EmailValidator()])
     contact = models.CharField(max_length=20) 
@@ -27,12 +27,24 @@ class Client(models.Model):
     
 class Invoice(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE),
+    # Denormalized fields from Client model (in case they change in the future)
+    client_name = models.CharField(max_length=50, default=None)
+    client_address = models.CharField(max_length=300, default=None)
+    client_email = models.CharField(max_length=100, validators=[EmailValidator()], default=None)
+    client_contact = models.CharField(max_length=20, default=None)
+
     freelancer = models.ForeignKey(Freelancer, on_delete=models.CASCADE),
+    # Denormalized fields from Freelancer model
+    freelancer_name = models.CharField(max_length=50, default=None)
+    freelancer_address = models.CharField(max_length=300, default=None)
+    freelancer_email = models.CharField(max_length=100, validators=[EmailValidator()], default=None)
+    freelancer_contact = models.CharField(max_length=20, default=None)
+
     date = models.DateTimeField(default=timezone.now),
-    month_ending = models.DateTimeField(),
-    services = models.JSONField(),
-    total_hours = models.IntegerField(),
-    hourly_rate = models.IntegerField(),
+    month_ending = models.DateTimeField(default=None),
+    services = models.JSONField(null=True),
+    total_hours = models.IntegerField(null=True),
+    total_charge = models.IntegerField(null=True),
     been_paid = models.BooleanField(default=False),
     recurring = models.BooleanField(default=False),
 

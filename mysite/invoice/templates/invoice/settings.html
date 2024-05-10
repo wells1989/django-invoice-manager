@@ -45,10 +45,16 @@
         class="mt-1 p-2 border border-gray-300 rounded-md w-full">
     </div>
 
-    <button type="submit"
-      class="inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Update</button>
+    <div class="flex justify-around">
+      <button type="submit"
+      class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Update</button>
+      <button
+  class="reset-buttons px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:ring-offset-2">Reset Changes</button> 
+    </div>
   </form>
+   
 </div>
+
 <div class="shadow-lg p-3 m-5 md:flex justify-center gap-10">
     <h2 class="text-white text-2xl font-bold mb-4">Edit Login details?</h2>
     <form method="post" action="{% url 'users:change_username' %}" class="bg-gray-700 text-white p-3 m-3">
@@ -56,7 +62,12 @@
         <label for="new_username" class="block m2">New Username:</label>
         <input type="text" id="new_username" name="new_username" value="{{ freelancer.user.username }}"
                class="block w-full px-4 py-2 border border-gray-300 text-black rounded-md m-3 mx-auto">
-        <button type="submit" class="block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Change Username</button>
+
+        <div class="block text-center">
+          <button type="submit" class=" mx-auto block px-4 py-2 m-3 bg-blue-500 text-white rounded hover:bg-blue-600">Change Username</button>
+          <button
+          class="reset-buttons mx-auto px-4 py-2 m-3 bg-yellow-500 text-white rounded hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:ring-offset-2">Reset Changes</button> 
+        </div>
     </form>
     
     <form method="post" action="{% url 'users:change_password' %}" class="p-3 m-3 bg-gray-700 text-white">
@@ -67,8 +78,28 @@
         <label for="new_password" class="block mb-2">New Password:</label>
         <input type="password" id="new_password" name="new_password"
                class="block w-full px-4 py-2 border border-gray-300 rounded-md mb-2">
-        <button type="submit" class="block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Change Password</button>
+        <div class="block text-center">
+          <button type="submit" class="mx-auto block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Change Password</button>
+          <button
+          class="reset-buttons mx-auto px-4 py-2 m-3 bg-yellow-500 text-white rounded hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:ring-offset-2">Reset Changes</button> 
+        </div>
     </form>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      const resetButtons = document.querySelectorAll(".reset-buttons");
+
+      resetButtons.forEach(function(button) {
+          button.addEventListener("click", function() {
+            event.preventDefault()
+              const form = button.closest("form");
+              if (form) {
+                  form.reset();
+              }
+          });
+      });
+  });
+</script>
 
 {% endblock %}

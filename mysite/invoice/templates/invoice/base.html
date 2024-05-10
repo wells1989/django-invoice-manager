@@ -40,7 +40,7 @@
                 </div>
 
                 <div id="services" class="flex justify-center align-center gap-3 flex-wrap w-full">
-                    <div class="min-w-min bg-gray-700 shadow-md rounded-lg overflow-hidden text-white">
+                    <div id="settings" class="min-w-min bg-gray-700 shadow-md rounded-lg overflow-hidden text-white">
                         <div class="p-4">
                           <h2 class="text-lg font-semibold mb-2">My details</h2>
                           <p class="mb-2">Manage your account</p>
@@ -49,7 +49,7 @@
                           <button class="settings-buttons px-4 py-2 bg-blue-500 rounded hover:bg-blue-600" data-url="{% url 'invoice:settings' %}">Here</button>
                         </div>
                     </div>
-                    <div class="min-w-min bg-gray-700 text-white shadow-md rounded-lg overflow-hidden">
+                    <div id="my_invoices" class="min-w-min bg-gray-700 text-white shadow-md rounded-lg overflow-hidden">
                         <div class="p-4">
                           <h2 class="text-lg font-semibold mb-2">My Invoices</h2>
                           <p class=" mb-2">Manage your Invoices</p>
@@ -58,7 +58,7 @@
                           <button class="settings-buttons px-4 py-2 bg-blue-500 rounded hover:bg-blue-600" data-url="{% url 'invoice:my_invoices' %}">Here</button>
                         </div>
                     </div>
-                    <div class="min-w-min bg-gray-700 text-white shadow-md rounded-lg overflow-hidden">
+                    <div id="new_invoice" class="min-w-min bg-gray-700 text-white shadow-md rounded-lg overflow-hidden">
                         <div class="p-4">
                           <h2 class="text-lg font-semibold mb-2">New Invoice</h2>
                           <p class=" mb-2">Create an invoice</p>
@@ -67,7 +67,7 @@
                           <button class="settings-buttons px-4 py-2 bg-blue-500 rounded hover:bg-blue-600" data-url="{% url 'invoice:new_invoice' %}">Here</button>
                         </div>
                     </div>
-                    <div class="min-w-min bg-gray-700 text-white shadow-md rounded-lg overflow-hidden">
+                    <div  id="history" class="min-w-min bg-gray-700 text-white shadow-md rounded-lg overflow-hidden">
                         <div class="p-4">
                           <h2 class="text-lg font-semibold mb-2">My History</h2>
                           <p class="mb-2">View history of invoice status</p>
@@ -76,7 +76,7 @@
                           <button class="settings-buttons px-4 py-2 bg-blue-500 rounded hover:bg-blue-600" data-url="{% url 'invoice:history' %}">Here</button>
                         </div>
                     </div>
-                    <div class="min-w-min bg-gray-700 text-white shadow-md rounded-lg overflow-hidden">
+                    <div id="statistics" class="min-w-min bg-gray-700 text-white shadow-md rounded-lg overflow-hidden">
                         <div class="p-4">
                           <h2 class="text-lg font-semibold mb-2">Statistics</h2>
                           <p class="mb-2">View your statistics</p>
@@ -106,10 +106,10 @@
         });
     });
 
-    // event listeners for buttons, and redirect to django URLS
-    document.addEventListener("DOMContentLoaded", function() {
-        const buttons = document.querySelectorAll(".settings-buttons");
+    // event listeners for buttons, and redirect to django URLS, adding border to current section
+    const buttons = document.querySelectorAll(".settings-buttons");
 
+    document.addEventListener("DOMContentLoaded", function() {
         buttons.forEach(function(button) {
         button.addEventListener("click", function() {
             const url = button.dataset.url;
@@ -117,10 +117,20 @@
         });
         });
     });
+
+    // adding green border for current div
+    const urlSections = window.location.href;
+
+    buttons.forEach(function(button) {
+        wrapperDiv = button.closest('.min-w-min')
+        if (urlSections.endsWith(`/invoices/${wrapperDiv.id}/`)) {
+        wrapperDiv.classList.add('border-4', 'border-green-700');
+        button.classList.remove('bg-blue-500')
+        button.classList.add('bg-green-500')
+        button.innerHTML = 'Current'
+        }
+    });
 </script>
-
-
-    </script>
 
 </body>
 <footer class="bg-gray-400 fixed bottom-0 w-full mx-auto">
