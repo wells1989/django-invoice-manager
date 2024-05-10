@@ -1,5 +1,213 @@
 {% extends 'invoice/base.html' %}
 
 {% block content %}
-<h1>new_invoice page</h1>
+<h1>New Invoice</h1>
+<!-- Creating new invoice -->
+{{ freelancer.name }}
+
+
+
+<!--viewing client list (DEV ONLY)-->
+<ul>
+    {% for client in clients %}
+        <li>{{ client.name}}, {{ client.address }}, {{ client.email }}, {{ client.contact }}</li>
+    {% endfor %}
+</ul>
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="shadow-lg p-3 m-5 md:w-1/2 mx-auto {% if message.tags == 'error' %} bg-red-200 text-red-800 {% elif message.tags == 'success' %} bg-green-200 text-green-800 {% endif %} rounded-lg">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
+
+
+<!-- new invoice form -->
+<div class="bg-gray-700 shadow-lg p-6 rounded-lg md:w-3/4 mx-auto">
+    <h2 class="text-white text-2xl font-bold mb-4">New Invoice</h2>
+    <form id="create_invoice_form" class="flex" method="post">
+        {% csrf_token %}
+        <!-- freelancer details-->
+        <div class="bg-blue-500 shadow-lg p-6 rounded-lg w-full sm:w-1/2 md:w-1/4 ">
+            <h2 class="text-black text-center text-xl font-bold mb-4">Freelancer Details</h2>
+            <input type="text" id="freelancer" name="freelancer" value="{{ freelancer.id }}" class="hidden" required>
+            <div class="mb-4">
+                <label for="freelancer_name" class="block text-white font-bold mb-2">Freelancer Name</label>
+                <input type="text" id="freelancer_name" name="freelancer_name" value="{{ freelancer.name }}" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+            </div>
+            <div class="mb-4">
+                <label for="freelancer_address" class="block text-white font-bold mb-2">Freelancer Address</label>
+                <input type="text" id="freelancer_address" name="freelancer_address" value="{{ freelancer.address }}" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+            </div>
+            <div class="mb-4">
+                <label for="freelancer_email" class="block text-white font-bold mb-2">Freelancer Email</label>
+                <input type="email" id="freelancer_email" name="freelancer_email" value="{{ freelancer.email }}" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+            </div>
+            <div class="mb-4">
+                <label for="freelancer_contact" class="block text-white font-bold mb-2">Freelancer Contact</label>
+                <input type="text" id="freelancer_contact" name="freelancer_contact" value="{{ freelancer.contact }}" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+            </div>
+        </div>
+
+        <!-- client details -->
+        <div class="bg-blue-500 shadow-lg p-6 rounded-lg w-full sm:w-1/2 md:w-1/4 ">
+            <h2 class="text-black text-center text-xl font-bold mb-4">Client Details</h2>
+            <div class="mb-4">
+                <label for="client" class="block text-white font-bold mb-2">Select Client</label>
+                <select id="client" name="client" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+                    <option value="" disabled selected>Select client</option>
+                    {% for client in clients %}
+                    <option value="{{ client.id }}" data-name="{{ client.name }}" data-address="{{ client.address }}" data-email="{{ client.email }}" data-contact="{{ client.contact }}">{{ client.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-4">
+                <label for="client_name" class="block text-white font-bold mb-2">Client Name</label>
+                <input type="text" id="client_name" name="client_name" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+            </div>
+            <div class="mb-4">
+                <label for="client_address" class="block text-white font-bold mb-2">Client Address</label>
+                <input type="text" id="client_address" name="client_address" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+            </div>
+            <div class="mb-4">
+                <label for="client_email" class="block text-white font-bold mb-2">Client Email</label>
+                <input type="email" id="client_email" name="client_email" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+            </div>
+            <div class="mb-4">
+                <label for="client_contact" class="block text-white font-bold mb-2">Client Contact</label>
+                <input type="text" id="client_contact" name="client_contact" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+            </div>
+        </div>
+
+        <!-- service details-->
+        <div class="bg-blue-500 shadow-lg p-6 rounded-lg w-full sm:w-1/2 md:w-1/4 ">
+            <h2 class="text-black text-center text-xl font-bold mb-4">Service Details</h2>
+            <div class="mb-4">
+                <label for="date" class="block text-white font-bold mb-2">Date</label>
+                <input type="date" id="date" name="date" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+            </div>
+            <div class="mb-4">
+                <label for="month_ending" class="block text-white font-bold mb-2">Month Ending</label>
+                <input type="date" id="month_ending" name="month_ending" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+            </div>
+            <div class="mb-4">
+                <label for="services" class="block text-white font-bold mb-2">Services</label>
+                <input type="text" id="services" name="services" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+            </div>
+        </div>
+
+        <!-- overall details-->
+        <div class="bg-blue-500 shadow-lg p-6 rounded-lg w-full sm:w-1/2 md:w-1/4 ">
+            <h2 class="text-black text-center text-xl font-bold mb-4">Overall</h2>
+            <div class="mb-4">
+                <label for="total_hours" class="block text-white font-bold mb-2">Total Hours</label>
+                <input type="number" id="total_hours" name="total_hours" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+            </div>
+            <div class="mb-4">
+                <label for="total_charge" class="block text-white font-bold mb-2">Total Charge</label>
+                <input type="number" id="total_charge" name="total_charge" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+            </div>
+            <div class="mb-4">
+                <label for="been_paid" class="block text-white font-bold mb-2">Been Paid</label>
+                <input type="checkbox" id="been_paid" name="been_paid" class="form-checkbox h-5 w-5 text-blue-600" required>
+            </div>
+            <div class="mb-4">
+                <label for="recurring" class="block text-white font-bold mb-2">Recurring</label>
+                <input type="checkbox" id="recurring" name="recurring" class="form-checkbox h-5 w-5 text-blue-600" required>
+            </div>
+            <div class="mb-4">
+                <label for="status" class="block text-white font-bold mb-2">Status</label>
+                <select id="status" name="status" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+                    <option value="sent">Sent</option>
+                    <option value="received">Received</option>
+                    <option value="read">Read</option>
+                </select>
+            </div>
+            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Add Invoice</button>
+        </div>
+        
+        
+    </form>
+
+</div>
+
+
+<!-- Create client section -->
+<div class="bg-gray-700 shadow-lg p-6 rounded-lg md:w-1/2 mx-auto">
+    <div class="flex p-2 m-3 justify-around items-center">
+        <h2 class="text-white text-2xl font-bold mb-4">Create A New Client?</h2>
+        <button class="text-black bg-white p-2 rounded-full" id="open-create-client_form">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </button>
+    </div>
+
+    <form id="create_client_form" class="hidden m-5" method="post" action="{% url 'invoice:create_client' %}">
+        {% csrf_token %}
+        <div class="mb-4">
+        <label for="name" class="block text-white font-bold mb-2">Client Name</label>
+        <input type="text" id="name" name="name" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+        </div>
+        <div class="mb-4">
+        <label for="address" class="block text-white font-bold mb-2">Client Address</label>
+        <input type="address" id="address" name="address" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+        </div>
+        <div class="mb-6">
+        <label for="email" class="block text-white font-bold mb-2">Client Email</label>
+        <input type="email" id="email" name="email" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+        </div>
+        <div class="mb-6">
+            <label for="contact" class="block text-white font-bold mb-2">Client Contact</label>
+            <input type="text" id="contact" name="contact" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+        </div>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Add Client</button>
+    </form>
+</div>
+
+{% if form.errors %}
+      <div class="bg-red-200 text-red-800 shadow-lg p-6 rounded-lg md:w-1/2 mx-auto">
+        <strong>Error:</strong> Please correct the following errors.
+        <ul>
+          {% for field, error_list in form.errors.items %}
+            {% for error in error_list %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+<script>
+    // toggling view of create client form
+    document.addEventListener("DOMContentLoaded", function() {
+        const openCreateClientFormButton = document.getElementById("open-create-client_form");
+        const createClientForm = document.getElementById("create_client_form");
+    
+        openCreateClientFormButton.addEventListener("click", function() {
+            createClientForm.classList.toggle("hidden");
+        });
+    });
+
+    // client dropdown and population
+    document.addEventListener("DOMContentLoaded", function() {
+        const clientDropdown = document.getElementById("client");
+        const clientNameInput = document.getElementById("client_name");
+        const clientAddressInput = document.getElementById("client_address");
+        const clientEmailInput = document.getElementById("client_email");
+        const clientContactInput = document.getElementById("client_contact");
+        
+        clientDropdown.addEventListener("change", function() {
+            const selectedOption = clientDropdown.options[clientDropdown.selectedIndex];
+            clientNameInput.value = selectedOption.getAttribute("data-name");
+            clientAddressInput.value = selectedOption.getAttribute("data-address");
+            clientEmailInput.value = selectedOption.getAttribute("data-email");
+            clientContactInput.value = selectedOption.getAttribute("data-contact");
+        });
+    });
+
+    
+</script>
+
 {% endblock %}

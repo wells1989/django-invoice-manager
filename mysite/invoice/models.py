@@ -16,7 +16,7 @@ class Freelancer(models.Model):
         return self.name
 
 class Client(models.Model):
-    freelancer = models.ForeignKey(Freelancer, on_delete=models.CASCADE),
+    freelancer = models.ForeignKey(Freelancer, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     address = models.CharField(max_length=300)
     email = models.CharField(max_length=100, validators=[EmailValidator()])
@@ -26,27 +26,27 @@ class Client(models.Model):
         return self.name
     
 class Invoice(models.Model):
-    client = models.ForeignKey(Client, on_delete=models.CASCADE),
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
     # Denormalized fields from Client model (in case they change in the future)
     client_name = models.CharField(max_length=50, default=None)
     client_address = models.CharField(max_length=300, default=None)
     client_email = models.CharField(max_length=100, validators=[EmailValidator()], default=None)
     client_contact = models.CharField(max_length=20, default=None)
 
-    freelancer = models.ForeignKey(Freelancer, on_delete=models.CASCADE),
+    freelancer = models.ForeignKey(Freelancer, on_delete=models.CASCADE)
     # Denormalized fields from Freelancer model
     freelancer_name = models.CharField(max_length=50, default=None)
     freelancer_address = models.CharField(max_length=300, default=None)
     freelancer_email = models.CharField(max_length=100, validators=[EmailValidator()], default=None)
     freelancer_contact = models.CharField(max_length=20, default=None)
 
-    date = models.DateTimeField(default=timezone.now),
-    month_ending = models.DateTimeField(default=None),
-    services = models.JSONField(null=True),
-    total_hours = models.IntegerField(null=True),
-    total_charge = models.IntegerField(null=True),
-    been_paid = models.BooleanField(default=False),
-    recurring = models.BooleanField(default=False),
+    date = models.DateTimeField(default=timezone.now)
+    month_ending = models.DateTimeField(default=None)
+    services = models.JSONField(null=True)
+    total_hours = models.IntegerField(null=True)
+    total_charge = models.IntegerField(null=True)
+    been_paid = models.BooleanField(default=False)
+    recurring = models.BooleanField(default=False)
 
     # below, 1st choice value stored in db, 2nd = human_readable name in forms / templates
     STATUS_CHOICES = [
@@ -59,6 +59,6 @@ class Invoice(models.Model):
 
 
 class History(models.Model):
-    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE),
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
     status = models.CharField(max_length=20)
     date = models.DateTimeField(default=timezone.now)

@@ -1,7 +1,9 @@
 from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Freelancer
+from .models import Freelancer, Client, Invoice, History
 from django.contrib import messages
+from .forms import ClientCreationForm, InvoiceCreationForm
+from django.http import JsonResponse
 
 # Create your views here.
 def test(request):
@@ -42,12 +44,37 @@ def settings(request):
         return redirect('invoice:settings')
 
 @login_required
-def my_invoices(request):
-    return render(request, 'invoice/my_invoices.html')
+def new_invoice(request):
+    freelancer = Freelancer.objects.get(user=request.user)
+    clients = Client.objects.filter(freelancer=freelancer)
+    form = InvoiceCreationForm(user=request.user)
+
+    if request.method == "POST":
+        pass
+
+    return render(request, 'invoice/new_invoice.html', {'freelancer': freelancer, 'clients': clients, 'form': form})
+
 
 @login_required
-def new_invoice(request):
-    return render(request, 'invoice/new_invoice.html')
+def create_client(request):
+    if request.method == "POST":
+        form = ClientCreationForm(request.POST)
+
+        if form.is_valid():
+
+            client = form.save(commit=False)
+            freelancer = Freelancer.objects.get(user=request.user)
+            client.freelancer = freelancer
+            client.save()
+            messages.success(request, 'Client successfully added.')
+        else:
+            messages.error(request, 'Error occurred.')
+
+        return render(request, 'invoice/new_invoice.html', {'form': form})
+
+@login_required
+def my_invoices(request):
+    return render(request, 'invoice/my_invoices.html')
 
 @login_required
 def history(request):
