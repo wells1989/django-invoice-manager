@@ -43,19 +43,20 @@ class Invoice(models.Model):
     date = models.DateTimeField(default=timezone.now)
     month_ending = models.DateTimeField(default=None)
     services = models.JSONField(null=True)
-    total_hours = models.IntegerField(null=True)
-    total_charge = models.IntegerField(null=True)
+    total_hours = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    total_charge = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    currency = models.CharField(max_length=3, default="EUR")
     been_paid = models.BooleanField(default=False)
-    recurring = models.BooleanField(default=False)
 
     # below, 1st choice value stored in db, 2nd = human_readable name in forms / templates
     STATUS_CHOICES = [
+        ('ready', 'Ready'),
         ('sent', 'Sent'),
         ('received', 'Received'),
         ('read', 'Read'),
     ]
 
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Ready")
 
 
 class History(models.Model):

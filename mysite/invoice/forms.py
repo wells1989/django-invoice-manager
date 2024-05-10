@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-import re
+import re, json
 from .models import Client, Invoice, Freelancer
 
 class ClientCreationForm(forms.ModelForm):
@@ -33,16 +33,7 @@ class InvoiceCreationForm(forms.ModelForm):
         model = Invoice
         fields = ['client', 'client_name', 'client_address', 'client_email', 'client_contact', 
                   'freelancer_name', 'freelancer_address', 'freelancer_email', 'freelancer_contact', 
-                  'date', 'month_ending', 'services', 'total_hours', 'total_charge', 'been_paid', 'recurring', 'status']
-    
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
-        super().__init__(*args, **kwargs)
-        if user:
-            freelancer = Freelancer.objects.get(user=user)
-            self.fields['client'].queryset = Client.objects.filter(freelancer=freelancer)
-        else:
-            self.fields['client'].queryset = Client.objects.none()
+                  'date', 'month_ending', 'services', 'total_hours', 'total_charge', 'currency', 'been_paid', 'status']
 
     def clean(self):
         cleaned_data = super().clean()
@@ -57,15 +48,26 @@ class InvoiceCreationForm(forms.ModelForm):
         date = cleaned_data.get('date')
         month_ending = cleaned_data.get('month_ending')
         services = cleaned_data.get('services')
+        currency = cleaned_data.get('currency')
         total_hours = cleaned_data.get('total_hours')
         total_charge = cleaned_data.get('total_charge')
-        been_paid = cleaned_data.get('been_paid')
-        recurring = cleaned_data.get('recurring')
-
 
         if not all([client_name, client_address, client_email, client_contact,
                     freelancer_name, freelancer_address, freelancer_email, freelancer_contact,
-                    date, month_ending, services, total_hours, total_charge, been_paid, recurring]):
+                    date, month_ending, services, currency, total_hours, total_charge]):
             raise ValidationError("All fields are required.")
 
         return cleaned_data
+
+    def clean_services(self):
+        services_csv = self.cleaned_data['services']
+        services_list = []
+        lines = services_csv.split('\n')
+        for line in lines:
+            service_data = {}
+            pairs = line.strip().split(',')
+            for pair in pairs:
+                key, value = pair.split(':')
+                service_data[key.strip()] = value.strip()
+            services_list.append(service_data)
+        return json.dumps(services_list)

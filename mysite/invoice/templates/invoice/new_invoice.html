@@ -26,10 +26,10 @@
 <!-- new invoice form -->
 <div class="bg-gray-700 shadow-lg p-6 rounded-lg md:w-3/4 mx-auto">
     <h2 class="text-white text-2xl font-bold mb-4">New Invoice</h2>
-    <form id="create_invoice_form" class="flex" method="post">
+    <form id="create_invoice_form" class="flex flex-wrap" method="post">
         {% csrf_token %}
         <!-- freelancer details-->
-        <div class="bg-blue-500 shadow-lg p-6 rounded-lg w-full sm:w-1/2 md:w-1/4 ">
+        <div class="bg-blue-500 shadow-lg p-6 rounded-lg w-full sm:w-1/2 lg:w-1/4 ">
             <h2 class="text-black text-center text-xl font-bold mb-4">Freelancer Details</h2>
             <input type="text" id="freelancer" name="freelancer" value="{{ freelancer.id }}" class="hidden" required>
             <div class="mb-4">
@@ -51,7 +51,7 @@
         </div>
 
         <!-- client details -->
-        <div class="bg-blue-500 shadow-lg p-6 rounded-lg w-full sm:w-1/2 md:w-1/4 ">
+        <div class="bg-blue-500 shadow-lg p-6 rounded-lg w-full sm:w-1/2 lg:w-1/4 ">
             <h2 class="text-black text-center text-xl font-bold mb-4">Client Details</h2>
             <div class="mb-4">
                 <label for="client" class="block text-white font-bold mb-2">Select Client</label>
@@ -80,9 +80,38 @@
             </div>
         </div>
 
-        <!-- service details-->
-        <div class="bg-blue-500 shadow-lg p-6 rounded-lg w-full sm:w-1/2 md:w-1/4 ">
+        <!-- adding service fields (JSON object)-->
+        <div class="bg-blue-500 shadow-lg p-6 rounded-lg w-full sm:w-1/2 lg:w-1/4 ">
             <h2 class="text-black text-center text-xl font-bold mb-4">Service Details</h2>
+            <div id="service_fields">
+                <!-- Initial service field -->
+                <div class="service_field">
+                    <div class="mb-4">
+                        <label for="description" class="block text-white font-bold mb-2">Description</label>
+                        <input type="text" id="description" name="description" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div class="mb-4">
+                        <label for="hours" class="block text-white font-bold mb-2">Hours</label>
+                        <input type="number" id="hours" name="hours" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div class="mb-4">
+                        <label for="charge" class="block text-white font-bold mb-2">Charge</label>
+                        <input type="number" id="charge" name="charge" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
+            </div>
+            <!-- Button to add new service field -->
+            <button type="button" id="add_service" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Add Service</button>
+            <div class="mb-4">
+                <label for="services_summary" class="block text-white font-bold mb-2">Services Summary</label>
+                <textarea id="services_summary" name="services" class="block w-full bg-gray-400 text-black border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" rows="6"></textarea>
+            </div>
+        </div>
+
+
+        <!-- overall details-->
+        <div class="bg-blue-500 shadow-lg p-6 rounded-lg w-full sm:w-1/2 lg:w-1/4 ">
+            <h2 class="text-black text-center text-xl font-bold mb-4">Overall</h2>
             <div class="mb-4">
                 <label for="date" class="block text-white font-bold mb-2">Date</label>
                 <input type="date" id="date" name="date" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
@@ -91,40 +120,36 @@
                 <label for="month_ending" class="block text-white font-bold mb-2">Month Ending</label>
                 <input type="date" id="month_ending" name="month_ending" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
             </div>
-            <div class="mb-4">
-                <label for="services" class="block text-white font-bold mb-2">Services</label>
-                <input type="text" id="services" name="services" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
-            </div>
-        </div>
-
-        <!-- overall details-->
-        <div class="bg-blue-500 shadow-lg p-6 rounded-lg w-full sm:w-1/2 md:w-1/4 ">
-            <h2 class="text-black text-center text-xl font-bold mb-4">Overall</h2>
+            <button type="button" id="calculate_button" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Calculate hours / charges</button>
             <div class="mb-4">
                 <label for="total_hours" class="block text-white font-bold mb-2">Total Hours</label>
                 <input type="number" id="total_hours" name="total_hours" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
             </div>
-            <div class="mb-4">
-                <label for="total_charge" class="block text-white font-bold mb-2">Total Charge</label>
-                <input type="number" id="total_charge" name="total_charge" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+            <div class="mb-4 block sm:flex justify-around">
+                <div>
+                    <label for="currency" class="block text-white font-bold mb-2">Currency</label>
+                    <input type="text" id="currency" name="currency" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+                </div>
+                <div>
+                    <label for="total_charge" class="block text-white font-bold mb-2">Total Charge</label>
+                    <input type="number" id="total_charge" name="total_charge" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+                </div>
+                
             </div>
             <div class="mb-4">
                 <label for="been_paid" class="block text-white font-bold mb-2">Been Paid</label>
-                <input type="checkbox" id="been_paid" name="been_paid" class="form-checkbox h-5 w-5 text-blue-600" required>
-            </div>
-            <div class="mb-4">
-                <label for="recurring" class="block text-white font-bold mb-2">Recurring</label>
-                <input type="checkbox" id="recurring" name="recurring" class="form-checkbox h-5 w-5 text-blue-600" required>
+                <input type="checkbox" id="been_paid" name="been_paid" class="form-checkbox h-5 w-5 text-blue-600">
             </div>
             <div class="mb-4">
                 <label for="status" class="block text-white font-bold mb-2">Status</label>
                 <select id="status" name="status" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+                    <option value="ready">Ready</option>
                     <option value="sent">Sent</option>
                     <option value="received">Received</option>
                     <option value="read">Read</option>
                 </select>
             </div>
-            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Add Invoice</button>
+            <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Add Invoice</button>
         </div>
         
         
@@ -180,6 +205,10 @@
     {% endif %}
 
 <script>
+
+    // Globals
+    const servicesSummaryField = document.getElementById("services_summary");
+
     // toggling view of create client form
     document.addEventListener("DOMContentLoaded", function() {
         const openCreateClientFormButton = document.getElementById("open-create-client_form");
@@ -207,6 +236,66 @@
         });
     });
 
+    document.addEventListener("DOMContentLoaded", function() {
+        const calculateButton = document.getElementById('calculate_button')
+        calculateButton.addEventListener("click", function() {
+
+            let totalHours = 0
+            let totalCharge = 0
+            
+            // calculating total hours / price etc from the CSV
+            const lines = servicesSummaryField.value.split('\n');
+                for (let i = 0; i < lines.length; i++) {
+                    const lineInfo = lines[i].split(",");
+                    for (let j = 0; j < lineInfo.length; j++) {
+                        const pairs = lineInfo[j].trim().split(":");
+                        if (pairs[0].toLowerCase().includes("hours")) {
+                            try {
+                                totalHours += Number(pairs[1].trim());
+                            } catch {
+                                continue;
+                            }
+                        } 
+                        if (pairs[0].toLowerCase().includes("charge")) {
+                            try {
+                                totalCharge += Number(pairs[1].trim());
+                            } catch {
+                                continue;
+                            }
+                        } 
+                    }
+                }
+
+                document.getElementById('total_hours').value = totalHours.toFixed(2);
+                document.getElementById('total_charge').value = totalCharge.toFixed(2);
+
+                console.log(`hours: ${totalHours}`)
+                console.log(`charge: ${totalCharge}`)
+        });
+    });
+
+    // service fields
+    document.addEventListener("DOMContentLoaded", function() {
+        const addServiceButton = document.getElementById("add_service");
+        const descriptionField = document.getElementById("description");
+        const hoursField = document.getElementById("hours");
+        const chargeField = document.getElementById("charge");
+
+        addServiceButton.addEventListener("click", function() {
+            const description = descriptionField.value;
+            const hours = hoursField.value;
+            const charge = chargeField.value;
+
+            // storing as CSV for ease of deletion etc
+            const newServiceCSV = `Description:${description}, Hours:${hours}, Charge:${charge}\n`;
+            servicesSummaryField.value += newServiceCSV;
+
+            // Clear the input fields
+            descriptionField.value = "";
+            hoursField.value = "";
+            chargeField.value = "";
+    });
+});
     
 </script>
 

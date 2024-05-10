@@ -47,10 +47,17 @@ def settings(request):
 def new_invoice(request):
     freelancer = Freelancer.objects.get(user=request.user)
     clients = Client.objects.filter(freelancer=freelancer)
-    form = InvoiceCreationForm(user=request.user)
+    form = InvoiceCreationForm()
 
     if request.method == "POST":
-        pass
+        form = InvoiceCreationForm(request.POST)
+        if form.is_valid():
+            print("valid form")
+            form.save()
+            messages.success(request, 'Invoice successfully added.')
+        else:
+            print("invalid form")
+            messages.error(request, 'Error in invoice.')
 
     return render(request, 'invoice/new_invoice.html', {'freelancer': freelancer, 'clients': clients, 'form': form})
 
