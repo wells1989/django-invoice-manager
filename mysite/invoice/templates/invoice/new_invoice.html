@@ -106,8 +106,14 @@
                 <label for="services_summary" class="block text-white font-bold mb-2">Services Summary</label>
                 <textarea id="services_summary" name="services" class="block w-full bg-gray-400 text-black border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" rows="6"></textarea>
             </div>
-        </div>
 
+            <!-- deleting services from service field -->
+            <div class="flex align-center justify-center">
+                <input type="number" id="line_to_delete" min="1" class="block w-1/2 bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" placeholder="Line number to delete">
+                <button type="button" id="delete_service_button" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Delete Service</button>
+            </div>
+            
+        </div>
 
         <!-- overall details-->
         <div class="bg-blue-500 shadow-lg p-6 rounded-lg w-full sm:w-1/2 lg:w-1/4 ">
@@ -209,6 +215,7 @@
 
     // Globals
     const servicesSummaryField = document.getElementById("services_summary");
+    let lineCount = 0
 
     // toggling view of create client form
     document.addEventListener("DOMContentLoaded", function() {
@@ -275,7 +282,7 @@
         });
     });
 
-    // service fields
+    // adding service fields
     document.addEventListener("DOMContentLoaded", function() {
         const addServiceButton = document.getElementById("add_service");
         const descriptionField = document.getElementById("description");
@@ -286,24 +293,56 @@
             const description = descriptionField.value;
             const hours = hoursField.value;
             const charge = chargeField.value;
-
+            
             // storing as CSV for ease of deletion etc
-            const newServiceCSV = `Description:${description}, Hours:${hours}, Charge:${charge}\n`;
+            const newServiceCSV = `${lineCount + 1}. Description:${description}, Hours:${hours}, Charge:${charge}\n`;
             servicesSummaryField.value += newServiceCSV;
 
-            // Clear the input fields
+            // Clear the input fields and augment count
+            lineCount ++
             descriptionField.value = "";
             hoursField.value = "";
             chargeField.value = "";
     });
 });
 
+    // deleting service fields
+    document.addEventListener("DOMContentLoaded", function() {
+        const deleteServiceButton = document.getElementById('delete_service_button')
+
+        deleteServiceButton.addEventListener("click", function() {
+            const deleteServiceLineNumber = document.getElementById('line_to_delete').value
+
+            const lines = servicesSummaryField.value.split('\n');
+            let newCSVvalue = ''
+            lineCount = 0
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim()
+                if (line) {
+                    const lineItems = lines[i].split(".")
+                    if (lineItems[0] != deleteServiceLineNumber) {
+                        const newLine = `${lineCount + 1}. ${lineItems[1]}\n`
+                        lineCount ++
+                        newCSVvalue += newLine
+                    }
+                }
+            }
+
+            servicesSummaryField.value = "";
+            servicesSummaryField.value = newCSVvalue;
+
+            deleteServiceLineNumber.value = "";
+        })
+
+    })
+
     // been_paid boolean
     const beenPaidCheckbox = document.getElementById('been_paid_checkbox');
     const beenPaidInput = document.getElementById('been_paid');
 
     beenPaidCheckbox.addEventListener('change', function() {
-        beenPaidInput.value = this.checked ? 'true' : 'false';
+        beenPaidInput.value = this.checked ? 'True' : 'False';
     });
     
 </script>
