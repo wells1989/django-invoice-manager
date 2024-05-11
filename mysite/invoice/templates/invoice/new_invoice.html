@@ -31,7 +31,7 @@
         <!-- freelancer details-->
         <div class="bg-blue-500 shadow-lg p-6 rounded-lg w-full sm:w-1/2 lg:w-1/4 ">
             <h2 class="text-black text-center text-xl font-bold mb-4">Freelancer Details</h2>
-            <input type="text" id="freelancer" name="freelancer_id" value="{{ freelancer.id }}" class="hidden" required>
+            <input type="text" id="freelancer" name="freelancer" value="{{ freelancer.id }}" class="hidden" required>
             <div class="mb-4">
                 <label for="freelancer_name" class="block text-white font-bold mb-2">Freelancer Name</label>
                 <input type="text" id="freelancer_name" name="freelancer_name" value="{{ freelancer.name }}" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
@@ -55,7 +55,7 @@
             <h2 class="text-black text-center text-xl font-bold mb-4">Client Details</h2>
             <div class="mb-4">
                 <label for="client" class="block text-white font-bold mb-2">Select Client</label>
-                <select id="client" name="client_id" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+                <select id="client" name="client" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
                     <option value="" disabled selected>Select client</option>
                     {% for client in clients %}
                     <option value="{{ client.id }}" data-name="{{ client.name }}" data-address="{{ client.address }}" data-email="{{ client.email }}" data-contact="{{ client.contact }}">{{ client.name }}</option>
@@ -276,9 +276,6 @@
 
                 document.getElementById('total_hours').value = totalHours.toFixed(2);
                 document.getElementById('total_charge').value = totalCharge.toFixed(2);
-
-                console.log(`hours: ${totalHours}`)
-                console.log(`charge: ${totalCharge}`)
         });
     });
 
@@ -295,7 +292,7 @@
             const charge = chargeField.value;
             
             // storing as CSV for ease of deletion etc
-            const newServiceCSV = `${lineCount + 1}. Description:${description}, Hours:${hours}, Charge:${charge}\n`;
+            const newServiceCSV = `${lineCount + 1}. Description: ${description}, Hours: ${hours}, Charge: ${charge}\n`;
             servicesSummaryField.value += newServiceCSV;
 
             // Clear the input fields and augment count

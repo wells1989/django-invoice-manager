@@ -27,43 +27,40 @@ class ClientCreationForm(forms.ModelForm):
 
 
 class InvoiceCreationForm(forms.ModelForm):
-    email = forms.EmailField()
-
     class Meta:
         model = Invoice
         fields = ['client', 'client_name', 'client_address', 'client_email', 'client_contact', 
                   'freelancer', 'freelancer_name', 'freelancer_address', 'freelancer_email', 'freelancer_contact', 
                   'date', 'month_ending', 'services', 'total_hours', 'total_charge', 'currency', 'been_paid', 'status']
 
-    """def clean(self):
+    def clean(self):
         cleaned_data = super().clean()
+
+        # form automatically converts {{ client.id }} value from form into the client object
+        freelancer = cleaned_data.get('freelancer')
         client = cleaned_data.get('client')
+
         client_name = cleaned_data.get('client_name')
         client_address = cleaned_data.get('client_address')
         client_email = cleaned_data.get('client_email')
         client_contact = cleaned_data.get('client_contact')
 
-        freelancer = cleaned_data.get('freelancer')
         freelancer_name = cleaned_data.get('freelancer_name')
         freelancer_address = cleaned_data.get('freelancer_address')
         freelancer_email = cleaned_data.get('freelancer_email')
         freelancer_contact = cleaned_data.get('freelancer_contact')
+
         date = cleaned_data.get('date')
         month_ending = cleaned_data.get('month_ending')
         services = cleaned_data.get('services')
         currency = cleaned_data.get('currency')
         total_hours = cleaned_data.get('total_hours')
         total_charge = cleaned_data.get('total_charge')
-        been_paid = cleaned_data.get('been_paid')
-
-        if been_paid == 'true':
-            cleaned_data['been_paid'] = True
-        else:
-            cleaned_data['been_paid'] = False
+        been_paid = False if cleaned_data.get('been_paid') == "" else True
 
         if not all([client, client_name, client_address, client_email, client_contact,
                     freelancer, freelancer_name, freelancer_address, freelancer_email, freelancer_contact,
-                    date, month_ending, services, currency, total_hours, total_charge]):
+                    date, month_ending, services, currency, total_hours, been_paid, total_charge]):
             raise ValidationError("All fields are required.")
 
-        return cleaned_data"""
+        return cleaned_data

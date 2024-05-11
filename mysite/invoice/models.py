@@ -62,4 +62,5 @@ class Invoice(models.Model):
 class History(models.Model):
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
     status = models.CharField(max_length=20)
+    been_paid = models.BooleanField(default=False)
     date = models.DateTimeField(default=timezone.now)
