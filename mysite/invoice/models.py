@@ -26,7 +26,7 @@ class Client(models.Model):
         return self.name
     
 class Invoice(models.Model):
-    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, default=None, on_delete=models.SET_DEFAULT)
     # Denormalized fields from Client model (in case they change in the future)
     client_name = models.CharField(max_length=50, default=None)
     client_address = models.CharField(max_length=300, default=None)

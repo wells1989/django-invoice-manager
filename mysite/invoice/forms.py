@@ -27,6 +27,9 @@ class ClientCreationForm(forms.ModelForm):
 
 
 class InvoiceCreationForm(forms.ModelForm):
+    client_email = forms.EmailField()
+    freelancer_email = forms.EmailField()
+    
     class Meta:
         model = Invoice
         fields = ['client', 'client_name', 'client_address', 'client_email', 'client_contact', 

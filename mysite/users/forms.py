@@ -24,17 +24,3 @@ class FreelancerCreationForm(forms.ModelForm):
             raise ValidationError("Please enter a valid email address.")
 
         return cleaned_data
-
-    """def data(self):
-        name = self.data.get('name')
-        address = self.data.get('address')
-        email = self.data.get('email')
-        contact = self.data.get('contact')
-
-        if not all([name, address, email, contact]):
-            raise ValidationError("All fields are required.")
-
-        if email and not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
-            raise ValidationError("Please enter a valid email address.")
-
-        return self.data"""
