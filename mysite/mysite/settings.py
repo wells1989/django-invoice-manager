@@ -29,6 +29,8 @@ ALLOWED_HOSTS = []
 
 LOGIN_REDIRECT_URL = 'invoice:home'
 
+LOGIN_URL = 'users:login'
+
 # Application definition
 
 INSTALLED_APPS = [
