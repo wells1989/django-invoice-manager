@@ -53,16 +53,11 @@ def new_invoice(request):
         form = InvoiceCreationForm(request.POST)
 
         if form.is_valid():
-            print("form valid")
 
             form.save()
             messages.success(request, 'Invoice successfully added.')
         else:
-            # DEV ONLY
-            print("Form is not valid. Errors:")
-            for field, errors in form.errors.items():
-                print(f"Field '{field}': {', '.join(errors)}")
-
+            
             messages.error(request, 'errors occurred with the invoice form')
 
 
