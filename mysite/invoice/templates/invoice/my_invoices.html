@@ -1,33 +1,97 @@
 {% extends 'invoice/base.html' %}
 
 {% block content %}
-<h1>invoices page</h1>
 
-{% for invoice in invoices %}
-<h2>{{ invoice.id }}</h2>
+{% if messages %}
+  {% for message in messages %}
+    <div class="shadow-lg p-3 m-5 md:w-1/2 mx-auto {% if message.tags == 'error' %} bg-red-200 text-red-800 {% elif message.tags == 'success' %} bg-green-200 text-green-800 {% endif %} rounded-lg">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
 
-<h2>Freelancer</h2>
-<h2>{{ invoice.freelancer.id }}</h2>
-<p>{{ invoice.freelancer_name }}</p>
-<p>{{ invoice.freelancer_address }}</p>
-<p>{{ invoice.freelancer_email }}</p>
-<p>{{ invoice.freelancer_contact }}</p>
+<div class="bg-gray-700 shadow-lg p-6 m-5 rounded-lg w-full mx-auto">
+    <h2 class="text-white text-2xl font-bold mb-4 text-center">My Invoices</h2>
+    {% for invoice in invoices %}
+    <h2 class="text-white text-lg font-bold mb-4">Invoice id: {{ invoice.id }}</h2>
+    <form id="create_invoice_form" class="flex flex-wrap mx-auto" method="post" action="{% url 'invoice:update_invoice' id=invoice.id %}">
+        {% csrf_token %}
+        <!-- freelancer details-->
+        <div class="bg-blue-500 shadow-lg p-4 rounded-lg w-1/2 sm:w-1/4 md:w-1/5">
+            <h2 class="text-black text-center text-xl font-bold mb-4">Freelancer Details</h2>
+                <input type="text" id="freelancer" name="freelancer" value="{{ freelancer.id }}" class="hidden" required>
+                <input type="text" id="freelancer_name" name="freelancer_name" value="{{ freelancer.name }}" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+                <input type="text" id="freelancer_address" name="freelancer_address" value="{{ freelancer.address }}" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+                <input type="email" id="freelancer_email" name="freelancer_email" value="{{ freelancer.email }}" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+                <input type="text" id="freelancer_contact" name="freelancer_contact" value="{{ freelancer.contact }}" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+        </div>
 
-<h2>Client</h2>
-<h2>{{ invoice.client.id }}</h2>
-<p>{{ invoice.client_name }}</p>
-<p>{{ invoice.client_address }}</p>
-<p>{{ invoice.client_email }}</p>
-<p>{{ invoice.client_contact }}</p>
+        <div class="bg-blue-500 shadow-lg p-4 rounded-lg w-1/2 sm:w-1/4 md:w-1/5">
+            <h2 class="text-black text-center text-xl font-bold mb-4">Client Details</h2>
+                <select id="client" name="client" required class="block w-full bg-gray-200 border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500">
+                    <option value="" disabled selected>Confirm client</option>
+                    {% for client in clients %}
+                    <option value="{{ client.id }}" data-name="{{ client.name }}" data-address="{{ client.address }}" data-email="{{ client.email }}" data-contact="{{ client.contact }}">{{ client.name }}</option>
+                    {% endfor %}
+                </select>
+                <input type="text" id="client_name" value="{{ invoice.client_name }}" name="client_name" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+                <input type="text" id="client_address" value="{{ invoice.client_address }}" name="client_address" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+                <input type="email" id="client_email" name="client_email" value="{{ invoice.client_email }}" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+                <input type="text" id="client_contact" name="client_contact" value="{{ invoice.client_contact }}" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+        </div>
 
-<h2>details</h2>
-<p>{{ invoice.date }}</p>
-<p>{{ invoice.month_ending }}</p>
-<p>{{ invoice.services }}</p>
-<p>{{ invoice.total_hours }}</p>
-<p>{{ invoice.total_charge }}</p>
-<p>{{ invoice.been_paid }}</p>
-<p>{{ invoice.status }}</p>
+        <!-- service fields text box-->
+        <div class="bg-blue-500 shadow-lg p-6 rounded-lg w-1/2 sm:w-1/4 md:w-1/5">
+            <h2 class="text-black text-center text-xl font-bold mb-4">Service Details</h2>
+                <textarea id="services_summary" name="services" class="block w-full bg-gray-400 text-black border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" rows="6">{% for service in invoice.services %}{{ service }}{% endfor %}</textarea>
+        </div>
 
-{% endfor %}
+        <!-- overall details-->
+        <div class="bg-blue-500 shadow-lg p-6 rounded-lg w-1/2 sm:w-1/4 md:w-1/5">
+                <input type="date" id="date" name="date" value="{{ invoice.date|date:'Y-m-d' }}" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+                <input type="date" id="month_ending" name="month_ending" value="{{ invoice.month_ending|date:'Y-m-d' }}" class="block w-full bg-white border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+                <input type="number" id="total_hours" name="total_hours" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" value="{{ invoice.total_hours}}" required> 
+                <input type="text" id="currency" name="currency" value="{{ invoice.currency}}" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+                <input type="number" id="total_charge" name="total_charge" value="{{ invoice.total_charge}}" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+                
+            <div class="mb-2 flex flex-around items-center">
+                <label for="been_paid" class="block text-white font-bold m-2">Paid?</label>
+                <input type="checkbox" id="been_paid_checkbox" name="been_paid_checkbox" {% if invoice.been_paid %}checked{% endif %} class="form-checkbox h-5 w-5 text-blue-600">
+                <input type="hidden" id="been_paid" name="been_paid" value="{{ invoice.been_paid }}">
+                <select id="status" name="status" value="{{ invoice.status }}" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
+                    <option value="ready">Ready</option>
+                    <option value="sent">Sent</option>
+                    <option value="received">Received</option>
+                    <option value="read">Read</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="bg-blue-500 shadow-lg p-6 rounded-lg w-1/2 sm:w-1/4 md:w-1/5 flex flex-col justify-around align-center">
+            <button type="submit" class="bg-blue-700 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded">Edit Invoice</button>
+            <button class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded">Reset Changes</button>
+            <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">PDF</button>
+        </div>
+        
+    </form>
+    {% endfor %}
+
+<script>
+    // client dropdown and population
+    document.addEventListener("DOMContentLoaded", function() {
+        const clientDropdown = document.getElementById("client");
+        const clientNameInput = document.getElementById("client_name");
+        const clientAddressInput = document.getElementById("client_address");
+        const clientEmailInput = document.getElementById("client_email");
+        const clientContactInput = document.getElementById("client_contact");
+        
+        clientDropdown.addEventListener("change", function() {
+            const selectedOption = clientDropdown.options[clientDropdown.selectedIndex];
+            clientNameInput.value = selectedOption.getAttribute("data-name");
+            clientAddressInput.value = selectedOption.getAttribute("data-address");
+            clientEmailInput.value = selectedOption.getAttribute("data-email");
+            clientContactInput.value = selectedOption.getAttribute("data-contact");
+        });
+    });
+</script>
 {% endblock %}

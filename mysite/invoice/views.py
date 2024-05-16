@@ -97,9 +97,35 @@ def delete_client(request, id):
 
 @login_required
 def my_invoices(request):
-    freelancer = Freelancer.objects.get(user=request.user)
-    invoices= Invoice.objects.filter(freelancer=freelancer)
-    return render(request, 'invoice/my_invoices.html', {'invoices': invoices})
+    if request.method == "GET":
+        freelancer = Freelancer.objects.get(user=request.user)
+        invoices= Invoice.objects.filter(freelancer=freelancer)
+        clients = Client.objects.filter(freelancer=freelancer)
+
+        for invoice in invoices:
+            invoice.services = invoice.services.split('\n')
+
+        return render(request, 'invoice/my_invoices.html', {'invoices': invoices, 'freelancer': freelancer, 'clients': clients})
+    elif request.method == "PUT":
+        pass
+
+@login_required
+def update_invoice(request, id):
+
+    if request.method == "POST":
+        print("request received!")
+        invoice = Invoice.objects.get(pk=id)
+        form = InvoiceCreationForm(request.POST, instance=invoice)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "invoice successfully updated")
+            # Optionally add success message
+        else:
+            messages.error(request, "error in updating the form")
+
+    return redirect(reverse('invoice:my_invoices'))
+        
 
 @login_required
 def history(request):

@@ -34,6 +34,36 @@ def test_create_client(client, freelancer, user):
 
     assert Client.objects.get(name="client_unique_name")
 
+# deleting a client
+@pytest.mark.django_db
+def test_delete_client(client, freelancer, user):
+    original_client = Client.objects.create(freelancer=freelancer, name="client_name", address="sample address", email="sample@gmail.com", contact="111222333")
+    
+    deleted_client_id = original_client.pk
+
+    response = client.delete(reverse('invoice:delete_client', kwargs={'id': deleted_client_id})) # i.e. invoice/delete_client/<int:id>
+
+    assert response.status_code == 302
+
+    messages = list(get_messages(response.wsgi_request))
+    assert len(messages) > 0
+
+    # Check for the specific success message
+    success_message_found = False
+    for message in messages:
+        if str(message) == 'client successfully deleted':
+            success_message_found = True
+            break
+
+    assert success_message_found
+
+    try:
+        client = Client.objects.get(pk=deleted_client_id)
+    except Client.DoesNotExist:
+        client = None
+
+    assert client is None
+
 # creating an invoice
 @pytest.mark.django_db
 def test_creating_invoice(client, freelancer, user, invoice_client):
