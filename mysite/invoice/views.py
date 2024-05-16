@@ -4,6 +4,7 @@ from .models import Freelancer, Client, Invoice, History
 from django.contrib import messages
 from .forms import ClientCreationForm, InvoiceCreationForm
 from django.http import JsonResponse
+from django.urls import reverse
 
 # Create your views here.
 def test(request):
@@ -80,6 +81,19 @@ def create_client(request):
             messages.error(request, 'Error occurred.')
 
         return render(request, 'invoice/new_invoice.html', {'form': form})
+
+@login_required
+def delete_client(request, id):
+    try:
+        client = Client.objects.get(pk=id)
+
+        client.delete()
+        messages.success(request, "client successfully deleted")
+    except:
+        messages.error(request, "error deleting client")
+
+    return redirect(reverse('invoice:new_invoice'))
+
 
 @login_required
 def my_invoices(request):
