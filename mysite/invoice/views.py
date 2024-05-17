@@ -99,7 +99,7 @@ def delete_client(request, id):
 def my_invoices(request):
     if request.method == "GET":
         freelancer = Freelancer.objects.get(user=request.user)
-        invoices= Invoice.objects.filter(freelancer=freelancer)
+        invoices= Invoice.objects.filter(freelancer=freelancer).order_by('-pk', '-date')
         clients = Client.objects.filter(freelancer=freelancer)
 
         for invoice in invoices:
@@ -113,7 +113,6 @@ def my_invoices(request):
 def update_invoice(request, id):
 
     if request.method == "POST":
-        print("request received!")
         invoice = Invoice.objects.get(pk=id)
         form = InvoiceCreationForm(request.POST, instance=invoice)
 
@@ -125,7 +124,19 @@ def update_invoice(request, id):
             messages.error(request, "error in updating the form")
 
     return redirect(reverse('invoice:my_invoices'))
-        
+
+@login_required
+def delete_invoice(request, id):
+    try:
+        invoice = Invoice.objects.get(pk=id)
+
+        invoice.delete()
+        messages.success(request, "invoice successfully deleted")
+    except:
+        messages.error(request, "error deleting invoice")
+
+    return redirect(reverse('invoice:my_invoices'))
+
 
 @login_required
 def history(request):

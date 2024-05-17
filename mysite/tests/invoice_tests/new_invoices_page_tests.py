@@ -1,9 +1,7 @@
 import pytest
 from django.urls import reverse
-from django.contrib.auth.models import User
 from django.contrib.messages import get_messages
-from django.contrib.auth import authenticate
-from invoice.models import Client, Invoice, Freelancer
+from invoice.models import Client, Invoice
 
 # creating a client
 @pytest.mark.django_db

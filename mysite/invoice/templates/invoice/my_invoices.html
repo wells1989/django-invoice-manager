@@ -69,11 +69,15 @@
 
         <div class="bg-blue-500 shadow-lg p-6 rounded-lg w-1/2 sm:w-1/4 md:w-1/5 flex flex-col justify-around align-center">
             <button type="submit" class="bg-blue-700 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded">Edit Invoice</button>
+        </form>
             <button class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded">Reset Changes</button>
             <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">PDF</button>
+            <form action="{% url 'invoice:delete_invoice' invoice.id %}" method="post" onsubmit="return confirmDelete();">
+                {% csrf_token %}
+                <button type="submit" class="w-full align-center bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Delete</button>
+            </form>
         </div>
         
-    </form>
     {% endfor %}
 
 <script>
@@ -93,5 +97,10 @@
             clientContactInput.value = selectedOption.getAttribute("data-contact");
         });
     });
+
+    // confirm before invoice deletion
+    function confirmDelete() {
+            return confirm("Are you sure you want to delete this item?");
+        }
 </script>
 {% endblock %}
