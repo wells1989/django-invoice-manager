@@ -1,5 +1,25 @@
 {% extends 'invoice/base.html' %}
 
 {% block content %}
-<h1>history page</h1>
+<div class="flex flex-col items-center justify-center h-full">
+    <div class="m-10 text-center">
+        <h1 class="text-2xl font-bold mb-4">History Page</h1>
+
+        <div class="space-y-4">
+            {% for entry in history %}
+            <div class="bg-gray-100 p-4 rounded-md flex flex-row items-center mx-auto">
+                <p class="mr-4"><span class="font-semibold">Invoice: </span>{{ entry.invoice.id }}</p>
+                {% if entry.status is not None %}
+                <p class="mr-4"><span class="font-semibold">Status: </span>{{ entry.status }}</p>
+                {% endif %}
+                {% if entry.been_paid is not None %}
+                <p class="mr-4"><span class="font-semibold">Payment Status: </span>{{ entry.been_paid }}</p>
+                {% endif %}
+                <p><span class="font-semibold">Date: </span> {{ entry.date }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
 {% endblock %}

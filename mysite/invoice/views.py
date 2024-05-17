@@ -55,8 +55,10 @@ def new_invoice(request):
 
         if form.is_valid():
 
-            form.save()
+            invoice = form.save()
             messages.success(request, 'Invoice successfully added.')
+
+            history = History.objects.create(invoice=invoice, status=invoice.status, been_paid=invoice.been_paid)
         else:
             
             messages.error(request, 'errors occurred with the invoice form')
@@ -116,10 +118,26 @@ def update_invoice(request, id):
         invoice = Invoice.objects.get(pk=id)
         form = InvoiceCreationForm(request.POST, instance=invoice)
 
+        prior_status = invoice.status
+        prior_been_paid = invoice.been_paid
+
         if form.is_valid():
-            form.save()
+            updated_invoice = form.save()
             messages.success(request, "invoice successfully updated")
-            # Optionally add success message
+            
+            if (updated_invoice.status != prior_status or 
+                updated_invoice.been_paid != prior_been_paid):
+
+                history = History.objects.create(invoice=updated_invoice)
+                
+                if updated_invoice.status != prior_status:
+                    history.status = updated_invoice.status
+                
+                if updated_invoice.been_paid != prior_been_paid:
+                    history.been_paid = updated_invoice.been_paid
+
+                history.save()
+            
         else:
             messages.error(request, "error in updating the form")
 
@@ -140,7 +158,11 @@ def delete_invoice(request, id):
 
 @login_required
 def history(request):
-    return render(request, 'invoice/history.html')
+    freelancer=Freelancer.objects.get(user=request.user)
+    invoices = Invoice.objects.filter(freelancer=freelancer)
+    history = History.objects.filter(invoice__in=invoices)
+
+    return render(request, 'invoice/history.html', {'history': history})
 
 @login_required
 def statistics(request):

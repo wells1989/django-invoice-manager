@@ -53,16 +53,15 @@
                 <input type="number" id="total_hours" name="total_hours" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" value="{{ invoice.total_hours}}" required> 
                 <input type="text" id="currency" name="currency" value="{{ invoice.currency}}" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
                 <input type="number" id="total_charge" name="total_charge" value="{{ invoice.total_charge}}" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
-                
             <div class="mb-2 flex flex-around items-center">
                 <label for="been_paid" class="block text-white font-bold m-2">Paid?</label>
                 <input type="checkbox" id="been_paid_checkbox" name="been_paid_checkbox" {% if invoice.been_paid %}checked{% endif %} class="form-checkbox h-5 w-5 text-blue-600">
                 <input type="hidden" id="been_paid" name="been_paid" value="{{ invoice.been_paid }}">
                 <select id="status" name="status" value="{{ invoice.status }}" class="block w-full bg-white border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" required>
-                    <option value="ready">Ready</option>
-                    <option value="sent">Sent</option>
-                    <option value="received">Received</option>
-                    <option value="read">Read</option>
+                    <option value="ready" {% if invoice.status == 'ready' %} selected {% endif %}>Ready</option>
+                    <option value="sent" {% if invoice.status == 'sent' %} selected {% endif %}>Sent</option>
+                    <option value="received" {% if invoice.status == 'received' %} selected {% endif %}>Received</option>
+                    <option value="read" {% if invoice.status == 'read' %} selected {% endif %}>Read</option>
                 </select>
             </div>
         </div>
@@ -117,6 +116,19 @@
             clientContactInput.value = selectedOption.getAttribute("data-contact");
         });
     });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const checkboxes = document.querySelectorAll("#been_paid_checkbox");
+
+        checkboxes.forEach(function(checkbox) {
+            const hiddenInput = checkbox.nextElementSibling;
+
+            checkbox.addEventListener('change', function() {
+                hiddenInput.value = checkbox.checked ? 'True' : 'False';
+            });
+        });
+    });
+
 
     // confirm before invoice deletion
     function confirmDelete() {
