@@ -158,11 +158,29 @@ def delete_invoice(request, id):
 
 @login_required
 def history(request):
-    freelancer=Freelancer.objects.get(user=request.user)
-    invoices = Invoice.objects.filter(freelancer=freelancer)
-    history = History.objects.filter(invoice__in=invoices)
 
-    return render(request, 'invoice/history.html', {'history': history})
+    freelancer=Freelancer.objects.get(user=request.user)
+    clients = Client.objects.filter(freelancer=freelancer)
+    invoices = Invoice.objects.filter(freelancer=freelancer)
+
+    history = History.objects.filter(invoice__in=invoices).order_by('-date')
+    
+    if request.method == "POST":
+        client_id = request.POST.get('client_id')
+
+        if client_id is not None:
+            client = Client.objects.get(pk=client_id)
+            print(client_id)
+            print(f'client details: {client.name} , {client.address}')
+        invoice_id = request.POST.get('invoice_id')
+
+        if invoice_id:
+            invoice = Invoice.objects.get(pk=invoice_id)
+            history = History.objects.filter(invoice__in=invoices, invoice=invoice)
+
+            print(invoice_id)
+
+    return render(request, 'invoice/history.html', {'history': history, 'clients': clients, 'invoices': invoices})
 
 @login_required
 def statistics(request):
