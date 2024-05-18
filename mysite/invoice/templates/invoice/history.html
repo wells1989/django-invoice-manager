@@ -8,10 +8,12 @@
         <div class="mx-auto">
             <form method="post" class="flex justify-around align-center">
                 {% csrf_token %}
-                <select name="client_id" class="block w-full bg-gray-200 border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500">
-                    <option value="" disabled selected>Select client</option>
-                    {% for client in clients %}
-                    <option value="{{ client.id }}">{{ client.name }}</option>
+                <select name="tag" class="block w-full bg-gray-200 border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500">
+                    <option value="" disabled selected>Select Tag</option>
+                    {% for invoice in invoices %}
+                    {% if invoice.tag %}
+                    <option value="{{ invoice.tag }}">{{ invoice.tag }}</option>
+                    {% endif %}
                     {% endfor %}
                 </select>
                 <select id="invoice_id" name="invoice_id" class="block w-full bg-gray-200 border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500">
@@ -28,7 +30,8 @@
         <div class="space-y-4">
             {% for entry in history %}
             <div class="bg-gray-100 p-4 rounded-md flex flex-row items-center mx-auto">
-                <p class="mr-4"><span class="font-semibold">Invoice: </span>{{ entry.invoice.id }}</p>
+                <p class="mr-4"><span class="font-semibold">Invoice Tag: </span>{{ entry.invoice.tag }}</p>
+                <p class="mr-4"><span class="font-semibold">Invoice ID: </span>{{ entry.invoice.id }}</p>
                 {% if entry.status is not None %}
                 <p class="mr-4"><span class="font-semibold">Status: </span>{{ entry.status }}</p>
                 {% endif %}

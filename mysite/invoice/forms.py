@@ -32,7 +32,7 @@ class InvoiceCreationForm(forms.ModelForm):
     
     class Meta:
         model = Invoice
-        fields = ['client', 'client_name', 'client_address', 'client_email', 'client_contact', 
+        fields = ['tag', 'client', 'client_name', 'client_address', 'client_email', 'client_contact', 
                   'freelancer', 'freelancer_name', 'freelancer_address', 'freelancer_email', 'freelancer_contact', 
                   'date', 'month_ending', 'services', 'total_hours', 'total_charge', 'currency', 'been_paid', 'status']
 
@@ -43,6 +43,7 @@ class InvoiceCreationForm(forms.ModelForm):
         freelancer = cleaned_data.get('freelancer')
         client = cleaned_data.get('client')
 
+        tag =cleaned_data.get('tag')
         client_name = cleaned_data.get('client_name')
         client_address = cleaned_data.get('client_address')
         client_email = cleaned_data.get('client_email')
