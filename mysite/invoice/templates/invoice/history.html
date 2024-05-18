@@ -5,6 +5,26 @@
     <div class="m-10 text-center">
         <h1 class="text-2xl font-bold mb-4">History Page</h1>
 
+        <div class="mx-auto">
+            <form method="post" class="flex justify-around align-center">
+                {% csrf_token %}
+                <select name="client_id" class="block w-full bg-gray-200 border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500">
+                    <option value="" disabled selected>Select client</option>
+                    {% for client in clients %}
+                    <option value="{{ client.id }}">{{ client.name }}</option>
+                    {% endfor %}
+                </select>
+                <select id="invoice_id" name="invoice_id" class="block w-full bg-gray-200 border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500">
+                    <option value="" disabled selected>Select invoice</option>
+                    {% for invoice in invoices %}
+                    <option value="{{ invoice.id }}">{{ invoice.id }}</option>
+                    {% endfor %}
+                </select>
+                <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Search</button>
+            </form>
+
+        </div>
+        
         <div class="space-y-4">
             {% for entry in history %}
             <div class="bg-gray-100 p-4 rounded-md flex flex-row items-center mx-auto">

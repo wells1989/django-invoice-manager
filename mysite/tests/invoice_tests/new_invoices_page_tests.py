@@ -1,7 +1,7 @@
 import pytest
 from django.urls import reverse
 from django.contrib.messages import get_messages
-from invoice.models import Client, Invoice
+from invoice.models import Client, Invoice, History
 
 # creating a client
 @pytest.mark.django_db
@@ -102,5 +102,8 @@ def test_creating_invoice(client, freelancer, user, invoice_client):
             break
     assert message_found
 
-    assert Invoice.objects.get(date="2024-05-20T12:00:00Z",services="Sample services description")
+    created_invoice = Invoice.objects.get(date="2024-05-20T12:00:00Z",services="Sample services description")
+    assert created_invoice
+    
+    assert History.objects.get(invoice=created_invoice)
     

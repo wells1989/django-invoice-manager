@@ -3,19 +3,19 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.messages import get_messages
 from django.contrib.auth import authenticate
-from invoice.models import Client, Invoice, Freelancer
+from invoice.models import Client, Invoice, Freelancer, History
 
 @pytest.mark.django_db
 def test_update_invoice(client, invoice, invoice_client, freelancer):
     invoice_id = invoice.pk
 
     data = {
-    "freelancer": freelancer,
+    "freelancer": freelancer.id,
     "freelancer_name": freelancer.name,
     "freelancer_address": freelancer.address,
     "freelancer_email": freelancer.email,
     "freelancer_contact": freelancer.contact,
-    "client": invoice_client,
+    "client": invoice_client.id,
     "client_name": invoice_client.name,
     "client_address": invoice_client.address,
     "client_email": invoice_client.email,
@@ -26,15 +26,9 @@ def test_update_invoice(client, invoice, invoice_client, freelancer):
     "total_hours": 10,
     "total_charge": 60,
     "currency": "EUR",
-    "been_paid": invoice.been_paid,
-    "status": invoice.status
+    "been_paid": True,
+    "status": "sent"
     }
-
-    # bypassing form validation for testing by directly setting attributes
-    invoice_instance = Invoice.objects.get(pk=invoice_id)
-    for key, value in data.items():
-        setattr(invoice_instance, key, value)
-    invoice_instance.save()
 
     response = client.post(reverse('invoice:update_invoice', kwargs={'id': invoice_id}), data)
 
@@ -44,6 +38,20 @@ def test_update_invoice(client, invoice, invoice_client, freelancer):
     assert invoice.currency == "EUR"
     assert invoice.total_hours == 10
     assert invoice.total_charge == 60
+
+    messages = list(get_messages(response.wsgi_request))
+    assert len(messages) > 0
+
+    # Check for the specific success message
+    success_message_found = False
+    for message in messages:
+        if str(message) == 'invoice successfully updated':
+            success_message_found = True
+            break
+    assert success_message_found
+
+    history = History.objects.get(invoice=invoice.id)
+    assert history.status == "sent" and history.been_paid == True
 
 
 @pytest.mark.django_db
