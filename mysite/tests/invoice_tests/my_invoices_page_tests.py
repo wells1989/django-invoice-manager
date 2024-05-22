@@ -80,6 +80,44 @@ def test_delete_invoice(client, invoice, invoice_client, freelancer):
 
     assert invoice is None
 
+@pytest.mark.django_db
+def test_my_invoices_search(client, freelancer, invoice):
+    data = {
+        "search_start_date": "2024-06-17",
+        "search_paid": "on",
+        "search_status": "ready", 
+    }
+
+    response = client.post(reverse('invoice:my_invoices'), data)
+
+    assert response.status_code == 200
+
+    messages = list(get_messages(response.wsgi_request))
+    assert len(messages) > 0
+
+    success_message_found = False
+    for message in messages:
+        if 'Filtering:' in str(message):
+            success_message_found = True
+            break
+
+    assert success_message_found
 
 
+@pytest.mark.django_db
+def test_my_invoices_empty_search(client, freelancer, invoice):
 
+    response = client.post(reverse('invoice:my_invoices'))
+
+    assert response.status_code == 200
+
+    messages = list(get_messages(response.wsgi_request))
+    assert len(messages) > 0
+
+    success_message_found = False
+    for message in messages:
+        if str(message) == 'filters cleared':
+            success_message_found = True
+            break
+
+    assert success_message_found

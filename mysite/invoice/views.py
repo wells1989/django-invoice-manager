@@ -14,9 +14,9 @@ def test(request):
 def home(request):
     if request.user.is_authenticated:
         try:
-            logged_in_freelancer = Freelancer.objects.get(user=request.user)
+            freelancer = Freelancer.objects.get(user=request.user)
         
-            return render(request, 'invoice/home.html', {'logged_in_freelancer':logged_in_freelancer})
+            return render(request, 'invoice/home.html', {'freelancer':freelancer})
         except:
             return redirect('users:login')   
     else:
@@ -114,33 +114,41 @@ def my_invoices(request):
         unpaid_filter = request.POST.get('search_unpaid')
         status_filter = request.POST.get('search_status')
 
+        filters = {}
+
         if start_date_filter:
-            invoices = invoices.filter(date__gte=start_date_filter)
+            filters['date__gte'] = start_date_filter
         
         if end_date_filter:
-            invoices = invoices.filter(date__lte=end_date_filter)
+            filters['date__lte'] = end_date_filter
 
         if client_filter:
-            invoices = invoices.filter(client__id=client_filter)
-
+            filters['client__name'] = client_filter
 
         if paid_filter:
-            paid_filter_boolean= True
-            invoices = invoices.filter(been_paid=paid_filter_boolean)
-        
-        if unpaid_filter:
-            paid_filter_boolean = False
-            invoices = invoices.filter(been_paid=paid_filter_boolean)
+            filters['been_paid'] = True
+        elif unpaid_filter:
+            filters['been_paid'] = False
 
         if status_filter:
-            invoices = invoices.filter(status=status_filter)
+            filters['status'] = status_filter
 
-        print(start_date_filter)
-        print(end_date_filter)
-        print(client_filter)
-        print(paid_filter)
-        print(unpaid_filter)
-        print(status_filter)
+        invoices = invoices.filter(**filters)
+
+        if filters:
+            filter_string = "Filtering: "
+            for key, value in filters.items():
+                if "__lte" in key or "__gte" in key:
+                    key, operator = key.rsplit('__', 1)
+
+                    print(f'operator = {operator}')
+                    symbol = "<=" if operator == "lte" else ">="
+                    filter_string += f'{key} {symbol} {value}. '
+                else:
+                    filter_string += f'{key}: {value}. '
+            messages.success(request, filter_string)
+        else:
+            messages.success(request, "filters cleared")
 
     return render(request, 'invoice/my_invoices.html', {'invoices': invoices, 'freelancer': freelancer, 'clients': clients})
 

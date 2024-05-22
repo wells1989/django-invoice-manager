@@ -40,6 +40,16 @@
                 </div>
 
                 <div id="services" class="flex justify-center align-center gap-3 flex-wrap w-full">
+                    <div  id="home" class="min-w-min bg-gray-700 text-white shadow-md rounded-lg overflow-hidden">
+                        <div class="p-4">
+                          <h2 class="text-lg font-semibold mb-2">Home</h2>
+                          <p class="mb-2">Viewing your statistics</p>
+                        </div>
+                        <div class="p-4 border-t border-gray-200">
+                          <button class="settings-buttons px-4 py-2 bg-blue-500 rounded hover:bg-blue-600" data-url="{% url 'invoice:home' %}">Here</button>
+                        </div>
+                    </div>
+
                     <div id="settings" class="min-w-min bg-gray-700 shadow-md rounded-lg overflow-hidden text-white">
                         <div class="p-4">
                           <h2 class="text-lg font-semibold mb-2">My details</h2>
