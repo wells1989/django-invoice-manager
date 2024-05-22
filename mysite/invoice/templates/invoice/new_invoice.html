@@ -1,18 +1,6 @@
 {% extends 'invoice/base.html' %}
 
 {% block content %}
-<h1>New Invoice</h1>
-<!-- Creating new invoice -->
-{{ freelancer.name }}
-
-
-
-<!--viewing client list (DEV ONLY)-->
-<ul>
-    {% for client in clients %}
-        <li>{{ client.name}}, {{ client.address }}, {{ client.email }}, {{ client.contact }}</li>
-    {% endfor %}
-</ul>
 
 {% if messages %}
   {% for message in messages %}
@@ -24,7 +12,7 @@
 
 
 <!-- new invoice form -->
-<div class="bg-gray-700 shadow-lg p-6 rounded-lg md:w-3/4 mx-auto">
+<div class="bg-gray-700 shadow-lg p-6 m-5 rounded-lg md:w-3/4 mx-auto">
     <h2 class="text-white text-2xl font-bold mb-4">New Invoice</h2>
     <form id="create_invoice_form" class="flex flex-wrap" method="post">
         {% csrf_token %}
