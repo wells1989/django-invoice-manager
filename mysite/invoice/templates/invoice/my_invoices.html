@@ -10,6 +10,67 @@
   {% endfor %}
 {% endif %}
 
+
+<div class="mx-auto max-w-4xl p-4">
+    <form method="post" class="flex flex-wrap justify-around items-center space-x-4">
+        {% csrf_token %}
+        
+        <!-- Start Date Field -->
+        <div class="flex flex-col">
+            <label for="search_start_date" class="block text-gray-700 font-bold">Start Date</label>
+            <input type="date" name="search_start_date" class="block w-40 bg-gray-200 border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" />
+        </div>
+
+        <!-- End Date Field -->
+        <div class="flex flex-col">
+            <label for="search_end_date" class="block text-gray-700 font-bold">End Date</label>
+            <input type="date" name="search_end_date" class="block w-40 bg-gray-200 border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500" />
+        </div>
+
+        <!-- Client Dropdown -->
+        <div class="flex flex-col">
+            <label for="search_client" class="block text-gray-700 font-bold">Client</label>
+            <select name="search_client" class="block w-60 bg-gray-200 border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500">
+                <option value="" disabled selected>Select Client</option>
+                {% for client in clients %}
+                <option value="{{ client.id }}">{{ client.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Paid/ unpaid Checkbox -->
+        <div class="flex items-center">
+            <input type="checkbox" name="search_paid" id="search_paid" class="form-checkbox h-5 w-5 text-blue-600" onclick="uncheckOther(this)">
+            <label for="search_paid" class="ml-2 text-green-700 font-bold">Paid?</label>
+        </div>
+
+        <div class="flex items-center">
+            <input type="checkbox" name="search_unpaid" id="search_unpaid" class="form-checkbox h-5 w-5 text-blue-600" onclick="uncheckOther(this)">
+            <label for="search_unpaid" class="ml-2 text-red-700 font-bold">Unpaid?</label>
+        </div>
+
+        <!-- Status Dropdown -->
+        <div class="flex flex-col">
+            <label for="search_status" class="block text-gray-700 font-bold">Status</label>
+            <select name="search_status" class="block w-60 bg-gray-200 border border-gray-300 rounded py-2 px-3 focus:outline-none focus:border-blue-500">
+                <option value="" disabled selected>Select Status</option>
+                <option value="ready">Ready</option>
+                <option value="sent">Sent</option>
+                <option value="received">Received</option>
+                <option value="read">Read</option>
+            </select>
+        </div>
+
+        <!-- Search Button -->
+        <div>
+            <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-green-400">
+                Search
+            </button>
+        </div>
+    </form>
+</div>
+
+
 <div class="bg-gray-700 shadow-lg p-6 m-5 rounded-lg w-full mx-auto">
     <h2 class="text-white text-2xl font-bold mb-4 text-center">My Invoices</h2>
     {% for invoice in invoices %}
@@ -110,6 +171,16 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
 
 <script>
+
+    // search paid and unpaid checkboxes mutual exclusion
+    function uncheckOther(checkbox) {
+        if (checkbox.id === "search_paid" && checkbox.checked) {
+            document.getElementById("search_unpaid").checked = false;
+        } else if (checkbox.id === "search_unpaid" && checkbox.checked) {
+            document.getElementById("search_paid").checked = false;
+        }
+    }
+
     // client dropdown and population
     document.addEventListener("DOMContentLoaded", function() {
         const clientDropdown = document.getElementById("client");

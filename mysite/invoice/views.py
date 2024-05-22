@@ -98,17 +98,51 @@ def delete_client(request, id):
 
 @login_required
 def my_invoices(request):
-    if request.method == "GET":
-        freelancer = Freelancer.objects.get(user=request.user)
-        invoices= Invoice.objects.filter(freelancer=freelancer).order_by('-pk', '-date')
-        clients = Client.objects.filter(freelancer=freelancer)
 
-        for invoice in invoices:
-            invoice.services = invoice.services.split('\n')
+    freelancer = Freelancer.objects.get(user=request.user)
+    invoices= Invoice.objects.filter(freelancer=freelancer).order_by('-pk', '-date')
+    clients = Client.objects.filter(freelancer=freelancer)
 
-        return render(request, 'invoice/my_invoices.html', {'invoices': invoices, 'freelancer': freelancer, 'clients': clients})
-    elif request.method == "PUT":
-        pass
+    for invoice in invoices:
+        invoice.services = invoice.services.split('\n')
+    
+    if request.method == "POST":
+        start_date_filter = request.POST.get('search_start_date')
+        end_date_filter = request.POST.get('search_end_date')
+        client_filter = request.POST.get('search_client')
+        paid_filter = request.POST.get('search_paid')
+        unpaid_filter = request.POST.get('search_unpaid')
+        status_filter = request.POST.get('search_status')
+
+        if start_date_filter:
+            invoices = invoices.filter(date__gte=start_date_filter)
+        
+        if end_date_filter:
+            invoices = invoices.filter(date__lte=end_date_filter)
+
+        if client_filter:
+            invoices = invoices.filter(client__id=client_filter)
+
+
+        if paid_filter:
+            paid_filter_boolean= True
+            invoices = invoices.filter(been_paid=paid_filter_boolean)
+        
+        if unpaid_filter:
+            paid_filter_boolean = False
+            invoices = invoices.filter(been_paid=paid_filter_boolean)
+
+        if status_filter:
+            invoices = invoices.filter(status=status_filter)
+
+        print(start_date_filter)
+        print(end_date_filter)
+        print(client_filter)
+        print(paid_filter)
+        print(unpaid_filter)
+        print(status_filter)
+
+    return render(request, 'invoice/my_invoices.html', {'invoices': invoices, 'freelancer': freelancer, 'clients': clients})
 
 @login_required
 def update_invoice(request, id):
@@ -167,15 +201,12 @@ def history(request):
         tag = request.POST.get('tag')
         if tag is not None:
             history = history.filter(invoice__tag=tag) # __accessing foreign key properties 
-            print(tag)
-
+            
         invoice_id = request.POST.get('invoice_id')
         if invoice_id:
             invoice = Invoice.objects.get(pk=invoice_id)
             history = history.filter(invoice=invoice)
            
-            print(invoice_id)
-
     return render(request, 'invoice/history.html', {'history': history, 'invoices': invoices})
 
 @login_required
