@@ -16,7 +16,7 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: postgres
         ports:
-          - '5432:5432'
+          - '5434:5432'
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
@@ -40,7 +40,7 @@ jobs:
           echo "DB_USER=${{ secrets.DB_USER }}" >> $GITHUB_ENV
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
           echo "DB_HOST=localhost" >> $GITHUB_ENV
-          echo "DB_PORT=5432" >> $GITHUB_ENV
+          echo "DB_PORT=5434" >> $GITHUB_ENV
 
       - name: Run Tests
         env:
