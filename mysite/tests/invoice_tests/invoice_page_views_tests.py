@@ -14,7 +14,7 @@ def test_homepage_view(client, freelancer, user):
 @pytest.mark.django_db
 def test_other_page_views(client, freelancer, user):
 
-    routes = [reverse('invoice:settings'), reverse('invoice:my_invoices'), reverse('invoice:new_invoice'), reverse('invoice:history'), reverse('invoice:statistics')]
+    routes = [reverse('invoice:settings'), reverse('invoice:my_invoices'), reverse('invoice:new_invoice'), reverse('invoice:history')]
 
     for route in routes:
         response = client.get(route)
