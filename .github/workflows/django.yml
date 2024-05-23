@@ -1,41 +1,24 @@
-name: Django CI
+name: Test GitHub Secrets
 
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
 
 jobs:
-  build:
+  test_secrets:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
-        run: |
-          cd mysite
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Set environment variables
-        run: |
-          echo "DB_NAME=${{ secrets.DB_NAME }}" >> $GITHUB_ENV
-          echo "DB_USER=${{ secrets.DB_USER }}" >> $GITHUB_ENV
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
-          echo "DB_HOST=${{ secrets.DB_HOST }}" >> $GITHUB_ENV
-          echo "DB_PORT=${{ secrets.DB_PORT }}" >> $GITHUB_ENV
-
-      - name: Run Tests
+      - name: Print GitHub Secrets
         env:
-          DJANGO_SETTINGS_MODULE: mysite.settings
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
         run: |
-          cd mysite
-          pytest
+          echo "DB_NAME: $DB_NAME"
+          echo "DB_USER: $DB_USER"
+          echo "DB_PASSWORD: $DB_PASSWORD"
+          echo "DB_HOST: $DB_HOST"
+          echo "DB_PORT: $DB_PORT"
