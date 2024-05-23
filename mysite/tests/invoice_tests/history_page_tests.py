@@ -1,6 +1,4 @@
 import pytest
-from django.test import RequestFactory
-from django.contrib.auth.models import User
 from invoice.views import history
 from django.urls import reverse
 

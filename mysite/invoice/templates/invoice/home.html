@@ -2,4 +2,253 @@
 
 {% block content %}
 
+<div class="m-5 bg-gray-700 p-3 rounded-lg w-3/4 mx-auto text-center text-white text-lg">
+    <h2 class="font-bold text-2xl">Freelancer stats for {{ freelancer.name }} </h2>
+    <div class="flex justify-center sm:justify-around p-3 m-4">
+        <h2 class="font-bold text-xl">Total Invoices: {{ invoice_count }} </h2>
+        <h2 class="font-bold text-xl">Total Clients: {{ client_count }} </h2>
+    </div>
+
+</div>
+
+<!-- chart container -->
+<div class="m-5 flex flex-col md:flex-row justify-center items-center">
+    <div class="shadow-lg m-4 p-4 w-full md:w-1/2 flex flex-col items-center">
+        <h2 class="text-2xl font-bold text-blue-800 mb-4">My Clients</h2>
+        <div id="chart" class="w-full h-full flex justify-center items-center"></div>
+    </div>
+    <div class="shadow-lg m-4 p-4 w-full md:w-1/2 flex flex-col items-center">
+        <h2 class="text-2xl font-bold text-blue-800 mb-4">Currency Earnings</h2>
+        <div id="pieChart" class="w-full h-full flex justify-center items-center"></div>
+    </div>
+</div>
+
+<!-- monthly chart-->
+<div class="mx-auto w-3/4 shadow-lg flex flex-col items-center mb-5">
+    <h2 class="text-2xl font-bold text-blue-800 mb-4">Monthly Income</h2>
+    <svg id="legend"></svg>
+    <svg id="barChart"></svg>
+</div>
+
+<!-- D3.js Script -->
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // Data for the bubble chart
+    const bubbleData = [
+        {% for key, value in client_earnings.items %}
+        {
+            id: "{{ key }}",
+            value: {{ value.total }},
+            currencies: {
+                {% for currency, amount in value.currencies.items %}
+                "{{ currency }}": {{ amount }}{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            }
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    // Client Bubble chart
+    const bubbleWidth = window.innerWidth / 2;
+    const bubbleHeight = window.innerHeight / 2;
+    const bubbleMargin = 1;
+    const bubbleFormat = d3.format(",d");
+    const bubbleColor = d3.scaleOrdinal(d3.schemeTableau10);
+    const bubblePack = d3.pack().size([bubbleWidth - bubbleMargin * 2, bubbleHeight - bubbleMargin * 2]).padding(3);
+
+    const bubbleRoot = bubblePack(d3.hierarchy({children: bubbleData}).sum(d => d.value));
+    const bubbleSvg = d3.select("#chart")
+        .append("svg")
+        .attr("width", bubbleWidth)
+        .attr("height", bubbleHeight)
+        .attr("viewBox", [-bubbleMargin, -bubbleMargin, bubbleWidth, bubbleHeight])
+        .attr("style", "max-width: 100%; height: auto; font: 10px sans-serif;")
+        .attr("text-anchor", "middle");
+
+    const bubbleNode = bubbleSvg.append("g")
+        .selectAll("g")
+        .data(bubbleRoot.leaves())
+        .join("g")
+        .attr("transform", d => `translate(${d.x},${d.y})`);
+
+    bubbleNode.append("title")
+        .text(d => `${d.data.id}\n${bubbleFormat(d.value)}`);
+
+    bubbleNode.append("circle")
+        .attr("fill-opacity", 0.7)
+        .attr("fill", d => bubbleColor(d.data.id))
+        .attr("r", d => d.r);
+
+    bubbleNode.append("text")
+        .style("font-size", "14px")
+        .style("font-weight", "bold")
+        .attr("clip-path", d => `circle(${d.r})`)
+        .selectAll("tspan")
+        .data(d => [`${d.data.id}`, `Total: ${bubbleFormat(d.value)}`])
+        .join("tspan")
+        .attr("x", 0)
+        .attr("y", (d, i, nodes) => `${i - nodes.length / 2 + 0.2}em`)
+        .text(d => d);
+
+    bubbleNode.append("text")
+        .style("font-size", "12px")
+        .attr("dy", "1.5em")
+        .selectAll("tspan")
+        .data(d => Object.entries(d.data.currencies))
+        .join("tspan")
+        .attr("x", 0)
+        .attr("y", (d, i, nodes) => `${(i + 1) * 2.5}em`)
+        .text(d => `${d[0]}: ${bubbleFormat(d[1])}`);
+
+    // Pie chart for currency
+    const pieData = [
+        {% for key, value in currencies.items %}
+        { name: "{{ key }}", value: {{ value }} }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    const pieWidth = 400;
+    const pieHeight = 400;
+    const pieColor = d3.scaleOrdinal()
+        .domain(pieData.map(d => d.name))
+        .range(d3.quantize(t => d3.interpolateSpectral(t * 0.8 + 0.1), pieData.length).reverse());
+    const pie = d3.pie()
+        .sort(null)
+        .value(d => d.value);
+    const arc = d3.arc()
+        .innerRadius(0)
+        .outerRadius(Math.min(pieWidth, pieHeight) / 2 - 1);
+    const labelRadius = arc.outerRadius()() * 0.8;
+    const arcLabel = d3.arc()
+        .innerRadius(labelRadius)
+        .outerRadius(labelRadius);
+    const arcs = pie(pieData);
+
+    // Create pie chart
+    const pieSvg = d3.select("#pieChart")
+        .append("svg")
+        .attr("width", pieWidth)
+        .attr("height", pieHeight)
+        .append("g")
+        .attr("transform", `translate(${pieWidth / 2},${pieHeight / 2})`);
+
+    pieSvg.selectAll("path")
+        .data(arcs)
+        .enter().append("path")
+        .attr("fill", d => pieColor(d.data.name))
+        .attr("d", arc)
+        .append("title")
+        .text(d => `${d.data.name}: ${d.data.value.toLocaleString("en-US")}`);
+
+    pieSvg.selectAll("text")
+        .data(arcs)
+        .enter().append("text")
+        .attr("transform", d => `translate(${arcLabel.centroid(d)})`)
+        .attr("text-anchor", "middle")
+        .call(text => text.append("tspan")
+            .attr("y", "-0.4em")
+            .attr("font-weight", "bold")
+            .text(d => d.data.name))
+        .call(text => text.filter(d => (d.endAngle - d.startAngle) > 0.25).append("tspan")
+            .attr("x", 0)
+            .attr("y", "0.7em")
+            .attr("font-weight", "bold")
+            .text(d => d.data.value.toLocaleString("en-US")));
+});
+
+    // monthly barchart
+    // chart data
+    const months = {{ months | safe }};
+
+    const monthsData = Object.entries(months).map(([month, data]) => ({
+            month: month,
+            total: data.total,
+            paid: data.paid,
+            unpaid: data.unpaid
+        }));
+
+    const keys = ['unpaid', 'paid'];
+
+    const stack = d3.stack().keys(keys).order(d3.stackOrderNone).offset(d3.stackOffsetNone);
+    const stackData = stack(monthsData);
+
+    const width = 928;
+    const height = 500;
+    const marginTop = 20;
+    const marginRight = 20;
+    const marginBottom = 50;
+    const marginLeft = 60;
+
+    const x = d3.scaleBand()
+        .domain(monthsData.map(d => d.month))
+        .range([marginLeft, width - marginRight])
+        .padding(0.1);
+
+    const y = d3.scaleLinear()
+        .domain([0, d3.max(stackData[stackData.length - 1], d => d[1])])
+        .range([height - marginBottom, marginTop]);
+
+    const color = d3.scaleOrdinal()
+        .domain(keys)
+        .range(["#FFA500", "#000080"]);
+
+    const svg = d3.select("#barChart")
+        .attr("viewBox", [0, 0, width, height])
+        .attr("width", width)
+        .attr("height", height)
+        .attr("style", "max-width: 100%; height: auto;");
+
+    svg.selectAll("g")
+        .data(stackData)
+        .join("g")
+        .attr("fill", d => color(d.key))
+        .selectAll("rect")
+        .data(d => d)
+        .join("rect")
+        .attr("x", (d, i) => x(monthsData[i].month))
+        .attr("y", d => y(d[1]))
+        .attr("height", d => y(d[0]) - y(d[1]))
+        .attr("width", x.bandwidth());
+
+    svg.append("g")
+        .attr("transform", `translate(0,${height - marginBottom})`)
+        .call(d3.axisBottom(x).tickSizeOuter(0))
+        .selectAll("text")
+        .style("font-size", "14px");
+
+    svg.append("g")
+        .attr("transform", `translate(${marginLeft},0)`)
+        .call(d3.axisLeft(y).tickSizeOuter(0))
+        .selectAll("text")
+        .style("font-size", "14px");
+
+    // legend info
+    const legendKeys = ['Unpaid', 'Paid'];
+    const legend = d3.select("#legend")
+        .attr("width", width)
+        .attr("height", 50)
+        .attr("style", "max-width: 100%; height: auto;");
+
+    const legendGroup = legend.selectAll("g")
+        .data(legendKeys)
+        .enter().append("g")
+        .attr("transform", (d, i) => `translate(${i * 100}, 0)`);
+
+    legendGroup.append("rect")
+        .attr("x", 10)
+        .attr("y", 10)
+        .attr("width", 20)
+        .attr("height", 20)
+        .attr("fill", (d, i) => color(keys[i]));
+
+    legendGroup.append("text")
+        .attr("x", 40)
+        .attr("y", 20)
+        .text(d => d)
+        .style("fill", "black")
+        .style("font-size", "14px");
+        
+</script>
+
 {% endblock %}
