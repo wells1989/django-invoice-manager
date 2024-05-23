@@ -1,6 +1,10 @@
-name: Running Tests
+name: django build and test
 
-on: [push]
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   Test:
@@ -9,12 +13,10 @@ jobs:
     services:
       postgres:
         image: postgres
-
         env:
           POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
           POSTGRES_DB: postgres
-
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -24,32 +26,31 @@ jobs:
           - 5432:5432
 
     steps:
-      # run steps required in the workflow
+      # Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      # Set up Python 3.11
       - name: Set up Python 3.11
         uses: actions/setup-python@v2
         with:
           python-version: 3.11
 
+      # Install dependencies
       - name: Install dependencies
         run: |
           cd mysite
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      # Run database migrations
       - name: Run database migrations
         run: |
           cd mysite
+          export DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres
           python manage.py migrate
-        env:
-          DB_HOST: localhost
-          DB_PORT: 5432
-          DB_NAME: postgres
-          DB_USER: postgres
-          DB_PASSWORD: postgres
 
+      # Run Tests
       - name: Run Tests
         env:
           DJANGO_SETTINGS_MODULE: mysite.settings
