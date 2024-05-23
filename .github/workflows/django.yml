@@ -10,6 +10,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      DJANGO_SETTINGS_MODULE: mysite.settings
+
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python
