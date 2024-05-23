@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
-import sys
 from dotenv import load_dotenv
 
 dotenv_path = r'C:\Users\wells\Desktop\Documents\Programming\Projects\nucamp\invoice_manager\.env'
@@ -86,11 +85,15 @@ WSGI_APPLICATION = "mysite.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 
-if 'test' in sys.argv:
+if os.environ.get('GITHUB_WORKFLOW'):
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': ':memory:',
+           'ENGINE': 'django.db.backends.postgresql',
+           'NAME': 'github_actions',
+           'USER': 'postgres',
+           'PASSWORD': 'postgres',
+           'HOST': '127.0.0.1',
+           'PORT': '5432',
         }
     }
 else:
@@ -101,7 +104,7 @@ else:
             'USER': os.environ.get('DB_USER'),
             'PASSWORD': os.environ.get('DB_PASSWORD'),
             'HOST': os.environ.get('DB_HOST'),
-            'PORT': os.environ.get('DB_PORT', 5434),
+            'PORT': os.environ.get('DB_PORT', 5432),
         },
     }
 
