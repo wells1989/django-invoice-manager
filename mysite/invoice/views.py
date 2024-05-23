@@ -12,15 +12,54 @@ def test(request):
 
 @login_required
 def home(request):
-    if request.user.is_authenticated:
-        try:
-            freelancer = Freelancer.objects.get(user=request.user)
-        
-            return render(request, 'invoice/home.html', {'freelancer':freelancer})
-        except:
-            return redirect('users:login')   
-    else:
-        return redirect('users:login')
+
+        freelancer = Freelancer.objects.get(user=request.user)
+    
+        # total invoices / clients for top stats
+        invoices = Invoice.objects.filter(freelancer=freelancer).order_by('date')
+        invoice_count = invoices.count()
+        clients = Client.objects.filter(freelancer=freelancer)
+        client_count = clients.count()
+
+        # data for charts
+        currencies = {}
+        client_earnings = {}
+        months= {}
+
+        for invoice in invoices:
+            invoice.currency = invoice.currency.upper()
+            invoice.client_name = invoice.client_name.lower()
+            invoice.total_charge = float(invoice.total_charge)
+
+            # populating currencies dictionary
+            if invoice.currency not in currencies.keys():
+                currencies[invoice.currency] = 0
+            currencies[invoice.currency] += float(invoice.total_charge)
+
+            # populating client_earings dictionary
+            if invoice.client_name not in client_earnings.keys():
+                client_earnings[invoice.client_name] = {'total': 0, 'currencies': {}}
+            
+            client_earnings[invoice.client_name]['total'] += invoice.total_charge
+            
+            if invoice.currency not in client_earnings[invoice.client_name]['currencies'].keys():
+                client_earnings[invoice.client_name]['currencies'][invoice.currency] = 0
+            
+            client_earnings[invoice.client_name]['currencies'][invoice.currency] += invoice.total_charge
+
+            # populating months dictionary
+            month = invoice.date.strftime('%Y-%m')
+            if not month in months:
+                months[month] = {'total': 0, 'paid': 0, 'unpaid': 0}
+
+            months[month]['total'] += invoice.total_charge
+
+            if invoice.been_paid:
+                months[month]['paid'] += invoice.total_charge
+            else:
+                months[month]['unpaid'] += invoice.total_charge
+
+        return render(request, 'invoice/home.html', {'freelancer':freelancer, 'invoice_count': invoice_count, 'client_count': client_count, 'currencies': currencies, 'client_earnings': client_earnings, 'months': months})
     
 
 @login_required
