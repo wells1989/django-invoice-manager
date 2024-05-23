@@ -10,13 +10,14 @@ jobs:
 
     services:
       postgres:
-        image: postgres:11
+        image: postgres:latest
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: postgres
+          POSTGRES_DB: github_actions
         ports:
-          - '5434:5432'
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
@@ -33,14 +34,6 @@ jobs:
           cd mysite
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
-      - name: Set environment variables
-        run: |
-          echo "DB_NAME=${{ secrets.DB_NAME }}" >> $GITHUB_ENV
-          echo "DB_USER=${{ secrets.DB_USER }}" >> $GITHUB_ENV
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
-          echo "DB_HOST=localhost" >> $GITHUB_ENV
-          echo "DB_PORT=5434" >> $GITHUB_ENV
 
       - name: Run Tests
         env:
