@@ -25,11 +25,15 @@ def home(request):
         currencies = {}
         client_earnings = {}
         months= {}
+        total_earnings = 0
 
         for invoice in invoices:
             invoice.currency = invoice.currency.upper()
             invoice.client_name = invoice.client_name.lower()
             invoice.total_charge = float(invoice.total_charge)
+            
+            # total earnings sum
+            total_earnings += invoice.total_charge
 
             # populating currencies dictionary
             if invoice.currency not in currencies.keys():
@@ -59,7 +63,9 @@ def home(request):
             else:
                 months[month]['unpaid'] += invoice.total_charge
 
-        return render(request, 'invoice/home.html', {'freelancer':freelancer, 'invoice_count': invoice_count, 'client_count': client_count, 'currencies': currencies, 'client_earnings': client_earnings, 'months': months})
+        average_charge = total_earnings / invoice_count
+
+        return render(request, 'invoice/home.html', {'freelancer':freelancer, 'invoice_count': invoice_count, 'client_count': client_count, 'currencies': currencies, 'client_earnings': client_earnings, 'months': months, 'total_earnings': total_earnings, 'average_charge': average_charge})
     
 
 @login_required

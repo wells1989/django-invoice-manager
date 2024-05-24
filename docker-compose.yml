@@ -1,0 +1,34 @@
+version: '3.4'
+
+services:
+  mysite:
+    image: mysite
+    build:
+      context: ./mysite
+      dockerfile: ./mysite/Dockerfile
+    ports:
+      - 8000:8000
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+ 
+    depends_on:
+          - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+
+  db:
+    image: postgres:latest
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+
+volumes:
+  db_data:
