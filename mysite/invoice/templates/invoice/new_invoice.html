@@ -14,7 +14,7 @@
 <!-- new invoice form -->
 <div class="bg-gray-700 shadow-lg p-6 m-5 rounded-lg md:w-3/4 mx-auto">
     <h2 class="text-white text-2xl font-bold mb-4">New Invoice</h2>
-    <form id="create_invoice_form" class="flex flex-wrap" method="post">
+    <form id="create_invoice_form" class="flex flex-wrap" method="post" action="{% url 'invoice:new_invoice' %}">
         {% csrf_token %}
         <!-- freelancer details-->
         <div class="bg-blue-500 shadow-lg p-6 rounded-lg w-full sm:w-1/2 lg:w-1/4 ">
