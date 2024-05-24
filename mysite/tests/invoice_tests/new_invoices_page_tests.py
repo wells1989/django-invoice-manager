@@ -3,6 +3,31 @@ from django.urls import reverse
 from django.contrib.messages import get_messages
 from invoice.models import Client, Invoice, History
 
+@pytest.mark.django_db
+def test_new_invoice_view_logged_in_user(client, freelancer, invoice, user, invoice_client):
+    response = client.get(reverse('invoice:new_invoice'))
+
+    assert response.status_code == 200
+    assert response.wsgi_request.path == reverse('invoice:new_invoice')
+
+    assert response.context['clients']
+    assert len(response.context['clients']) == 1
+
+    client_result = response.context['clients'].first()
+    assert client_result.name == invoice_client.name
+
+@pytest.mark.django_db
+def test_new_invoice_view_logged_out_user(client, user):
+    client.logout()
+
+    response = client.get(reverse('invoice:new_invoice'), follow=True)
+
+    assert response.redirect_chain[0][1] == 302
+
+    assert response.status_code == 200
+    assert response.wsgi_request.path == reverse('users:login')
+
+
 # creating a client
 @pytest.mark.django_db
 def test_create_client(client, freelancer, user):

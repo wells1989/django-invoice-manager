@@ -6,6 +6,35 @@ from django.contrib.auth import authenticate
 from invoice.models import Client, Invoice, Freelancer, History
 
 @pytest.mark.django_db
+def test_my_invoices_page_logged_in_view(client, user, freelancer, invoice):
+    response = client.get(reverse('invoice:my_invoices'))
+
+    assert response.status_code == 200
+
+    assert response.wsgi_request.path == reverse('invoice:my_invoices')
+    assert response.context['invoices']
+
+    invoices = response.context['invoices']
+
+    assert len(invoices) == 1
+
+    # result = queryset so not iterable via normal methods
+    returned_invoice = invoices.first() 
+    assert returned_invoice.tag == invoice.tag
+
+@pytest.mark.django_db
+def test_my_invoices_page_logged_out_user(client, user, freelancer):
+    client.logout()
+
+    response = client.get(reverse('invoice:my_invoices'), follow=True)
+
+    assert response.redirect_chain[0][1] == 302
+
+    assert response.status_code == 200
+    assert response.wsgi_request.path == reverse('users:login')
+
+
+@pytest.mark.django_db
 def test_update_invoice(client, invoice, invoice_client, freelancer):
     invoice_id = invoice.pk
 

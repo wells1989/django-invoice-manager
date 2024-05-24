@@ -1,10 +1,7 @@
 import pytest
 from django.test import Client
-from django.urls import reverse
 from django.contrib.auth.models import User
-from django.contrib.messages import get_messages
-from invoice.models import Freelancer, Client as Invoice_Client, Invoice
-from django.utils import timezone
+from invoice.models import Freelancer, Client as Invoice_Client, Invoice, History
 
 @pytest.fixture
 def client():
@@ -33,10 +30,16 @@ def invoice_client(freelancer):
 
 @pytest.fixture
 def invoice(freelancer, invoice_client):
-    invoice = Invoice.objects.create(freelancer=freelancer, freelancer_name=freelancer.name, freelancer_address=freelancer.address, freelancer_email=freelancer.email, freelancer_contact=freelancer.contact,
+    invoice = Invoice.objects.create(freelancer=freelancer, tag="example_tag", freelancer_name=freelancer.name, freelancer_address=freelancer.address, freelancer_email=freelancer.email, freelancer_contact=freelancer.contact,
                                      client=invoice_client, client_name=invoice_client.name, client_address=invoice_client.address, client_email=invoice_client.email, client_contact=invoice_client.contact,
                                      services='1. test service, 5, 6', date="2024-06-17", month_ending="2024-05-17", total_hours=5, total_charge=30, currency='USD', been_paid=False, status='ready')
     return invoice
+
+
+@pytest.fixture
+def history(invoice):
+    history = History.objects.create(invoice=invoice, status="ready", been_paid=False, date="2024-06-17")
+    return history
 
 
 

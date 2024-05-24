@@ -1,6 +1,16 @@
 import pytest
-from invoice.views import history
 from django.urls import reverse
+
+@pytest.mark.django_db
+def test_home_page_without_logged_in_user(client, user):
+    client.logout()
+
+    response = client.get(reverse('invoice:home'), follow=True)
+
+    assert response.redirect_chain[0][1] == 302
+
+    assert response.status_code == 200
+    assert response.wsgi_request.path == reverse('users:login')
 
 @pytest.mark.django_db
 def test_homepage_view(client, freelancer, invoice):
