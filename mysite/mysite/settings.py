@@ -32,7 +32,7 @@ SECRET_KEY = "django-insecure-v-v2$z8&-0m4**d$8r5ev_0tecrj0ujlvrs#_z6272fr9u(s!t
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 LOGIN_REDIRECT_URL = 'invoice:home'
 
