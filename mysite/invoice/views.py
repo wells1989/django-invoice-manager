@@ -63,7 +63,10 @@ def home(request):
             else:
                 months[month]['unpaid'] += invoice.total_charge
 
-        average_charge = total_earnings / invoice_count
+        if invoice_count == 0:
+            average_charge = None
+        else:
+            average_charge = total_earnings / invoice_count
 
         return render(request, 'invoice/home.html', {'freelancer':freelancer, 'invoice_count': invoice_count, 'client_count': client_count, 'currencies': currencies, 'client_earnings': client_earnings, 'months': months, 'total_earnings': total_earnings, 'average_charge': average_charge})
     
