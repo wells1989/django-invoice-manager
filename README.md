@@ -38,7 +38,6 @@ cd django-invoice-manager
 - Copy the example environment file and customize it (as the docker-compose file uses environment variables to set the Postgres database:
 
 ```
-Copy code
 cp .env.example .env
 ```
  .env example:
